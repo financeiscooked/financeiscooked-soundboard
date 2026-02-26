@@ -86,11 +86,11 @@ export const DEFAULT_SOUNDS = [
     play: makePlayer('/sounds/practice.mp3'),
   },
   {
-    id: 'john-cena',
-    name: 'JOHN CENA',
+    id: 'mario-game-over',
+    name: 'MARIO DEATH',
     color: '#8b5cf6',
-    audioSrc: '/sounds/john-cena.mp3',
-    play: makePlayer('/sounds/john-cena.mp3'),
+    audioSrc: '/sounds/mario-game-over.mp3',
+    play: makePlayer('/sounds/mario-game-over.mp3'),
   },
   {
     id: 'curb',
@@ -114,10 +114,10 @@ export const DEFAULT_SOUNDS = [
     play: makePlayer('/sounds/mgs-alert.mp3'),
   },
   {
-    id: 'windows-error',
-    name: 'WINDOWS ERROR',
+    id: 'free-real-estate',
+    name: 'FREE REAL ESTATE',
     color: '#10b981',
-    audioSrc: '/sounds/windows-xp-error.mp3',
-    play: makePlayer('/sounds/windows-xp-error.mp3'),
+    audioSrc: '/sounds/free-real-estate.mp3',
+    play: makePlayer('/sounds/free-real-estate.mp3'),
   },
 ]

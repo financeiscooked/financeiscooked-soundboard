@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { Volume2, VolumeX } from 'lucide-react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { StopCircle } from 'lucide-react'
 import SoundButton from './SoundButton'
 import EditModal from './EditModal'
 import { DEFAULT_SOUNDS } from '../sounds/synthesizer'
@@ -14,7 +14,7 @@ import {
 export default function SoundBoard() {
   const [slots, setSlots] = useState([])
   const [editingSlot, setEditingSlot] = useState(null)
-  const [masterMuted, setMasterMuted] = useState(false)
+  const [stopAllSignal, setStopAllSignal] = useState(0)
 
   useEffect(() => {
     async function loadSlots() {
@@ -144,14 +144,15 @@ export default function SoundBoard() {
 
   return (
     <>
-      {/* Mute toggle */}
+      {/* Stop All button */}
       <div className="absolute top-4 right-6 z-10">
         <button
-          onClick={() => setMasterMuted(!masterMuted)}
-          className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors"
-          title={masterMuted ? 'Unmute' : 'Mute'}
+          onClick={() => setStopAllSignal((s) => s + 1)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors text-xs font-bold tracking-wider uppercase"
+          title="Stop all sounds"
         >
-          {masterMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          <StopCircle size={16} />
+          Stop All
         </button>
       </div>
 
@@ -161,8 +162,9 @@ export default function SoundBoard() {
           {slots.map((slot) => (
             <SoundButton
               key={slot.id}
-              slot={masterMuted ? { ...slot, defaultSound: { play: () => {} }, customAudioUrl: null } : slot}
+              slot={slot}
               onEdit={handleEdit}
+              stopAllSignal={stopAllSignal}
             />
           ))}
         </div>

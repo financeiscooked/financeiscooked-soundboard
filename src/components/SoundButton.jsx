@@ -1,16 +1,32 @@
-import React, { useState, useRef, useCallback } from 'react'
-import { Pencil } from 'lucide-react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { Pencil, Square } from 'lucide-react'
 
-export default function SoundButton({ slot, onEdit }) {
+export default function SoundButton({ slot, onEdit, stopAllSignal }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const btnRef = useRef(null)
   const audioRef = useRef(null)
 
-  const handlePlay = useCallback(() => {
-    // Stop any currently playing audio from this button
+  const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
+      audioRef.current = null
+    }
+    setIsPlaying(false)
+  }, [])
+
+  // Stop all sounds when signal changes
+  useEffect(() => {
+    if (stopAllSignal > 0) {
+      stopAudio()
+    }
+  }, [stopAllSignal, stopAudio])
+
+  const handleClick = useCallback(() => {
+    // If already playing, stop it
+    if (isPlaying) {
+      stopAudio()
+      return
     }
 
     setIsPlaying(true)
@@ -20,9 +36,21 @@ export default function SoundButton({ slot, onEdit }) {
       const audio = new Audio(slot.customAudioUrl)
       audioRef.current = audio
       audio.play()
-      audio.onended = () => setIsPlaying(false)
+      audio.onended = () => {
+        audioRef.current = null
+        setIsPlaying(false)
+      }
+    } else if (slot.defaultSound?.audioSrc) {
+      // Play from audio file (new default sounds)
+      const audio = new Audio(slot.defaultSound.audioSrc)
+      audioRef.current = audio
+      audio.play()
+      audio.onended = () => {
+        audioRef.current = null
+        setIsPlaying(false)
+      }
     } else if (slot.defaultSound?.play) {
-      // Play synthesized sound
+      // Fallback: synthesized sound (no stop support)
       slot.defaultSound.play()
       setTimeout(() => setIsPlaying(false), 300)
     }
@@ -30,10 +58,10 @@ export default function SoundButton({ slot, onEdit }) {
     // Button press animation
     if (btnRef.current) {
       btnRef.current.classList.remove('btn-press', 'glow-playing')
-      void btnRef.current.offsetWidth // force reflow
+      void btnRef.current.offsetWidth
       btnRef.current.classList.add('btn-press', 'glow-playing')
     }
-  }, [slot])
+  }, [slot, isPlaying, stopAudio])
 
   const handleEdit = (e) => {
     e.stopPropagation()
@@ -47,10 +75,13 @@ export default function SoundButton({ slot, onEdit }) {
       ref={btnRef}
       className="sound-btn flex flex-col items-center justify-center gap-2 p-3"
       style={{
-        background: `linear-gradient(145deg, ${color}22, ${color}11)`,
+        background: isPlaying
+          ? `linear-gradient(145deg, ${color}44, ${color}22)`
+          : `linear-gradient(145deg, ${color}22, ${color}11)`,
         '--glow-color': `${color}88`,
+        borderColor: isPlaying ? `${color}66` : undefined,
       }}
-      onClick={handlePlay}
+      onClick={handleClick}
     >
       {/* Edit button */}
       <div className="edit-overlay z-10">
@@ -62,11 +93,19 @@ export default function SoundButton({ slot, onEdit }) {
         </button>
       </div>
 
-      {/* Color indicator bar */}
-      <div
-        className="w-10 h-1 rounded-full mb-1"
-        style={{ background: color }}
-      />
+      {/* Color indicator bar or stop icon */}
+      {isPlaying ? (
+        <Square
+          size={14}
+          className="fill-current"
+          style={{ color: color }}
+        />
+      ) : (
+        <div
+          className="w-10 h-1 rounded-full mb-1"
+          style={{ background: color }}
+        />
+      )}
 
       {/* Sound name */}
       <span

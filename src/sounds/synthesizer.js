@@ -16,11 +16,11 @@ export const DEFAULT_SOUNDS = [
     play: makePlayer('/sounds/airhorn.mp3'),
   },
   {
-    id: 'vine-boom',
-    name: 'VINE BOOM',
+    id: 'i-am-your-father',
+    name: 'I AM YOUR FATHER',
     color: '#f97316',
-    audioSrc: '/sounds/vine-boom.mp3',
-    play: makePlayer('/sounds/vine-boom.mp3'),
+    audioSrc: '/sounds/i-am-your-father.mp3',
+    play: makePlayer('/sounds/i-am-your-father.mp3'),
   },
   {
     id: 'bruh',
@@ -51,11 +51,11 @@ export const DEFAULT_SOUNDS = [
     play: makePlayer('/sounds/law-and-order.mp3'),
   },
   {
-    id: 'sad-violin',
-    name: 'SAD VIOLIN',
+    id: 'imperial-march',
+    name: 'IMPERIAL MARCH',
     color: '#ec4899',
-    audioSrc: '/sounds/sad-violin.mp3',
-    play: makePlayer('/sounds/sad-violin.mp3'),
+    audioSrc: '/sounds/imperial-march.mp3',
+    play: makePlayer('/sounds/imperial-march.mp3'),
   },
   {
     id: 'price-is-right',

@@ -1,127 +1,100 @@
-// Default meme definitions with placeholder SVG generators
-// Users will replace these with their own images
-
-function createPlaceholderSvg(emoji, label, bgColor) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
-    <rect width="400" height="400" fill="${bgColor}" rx="16"/>
-    <text x="200" y="170" text-anchor="middle" font-size="80">${emoji}</text>
-    <text x="200" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="22" fill="white">${label}</text>
-    <text x="200" y="270" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.4)">Click pencil to add image</text>
-  </svg>`
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
-}
+// Default meme definitions with real meme images
 
 export const DEFAULT_MEMES = [
   {
     id: 'meme-this-is-fine',
     name: 'THIS IS FINE',
     color: '#ef4444',
-    emoji: '\u{1F525}',
-    placeholder: createPlaceholderSvg('\u{1F525}', 'THIS IS FINE', '#7f1d1d'),
+    placeholder: '/memes/this-is-fine.jpg',
   },
   {
-    id: 'meme-stonks',
-    name: 'STONKS',
-    color: '#22c55e',
-    emoji: '\u{1F4C8}',
-    placeholder: createPlaceholderSvg('\u{1F4C8}', 'STONKS', '#14532d'),
-  },
-  {
-    id: 'meme-not-stonks',
-    name: 'NOT STONKS',
-    color: '#ef4444',
-    emoji: '\u{1F4C9}',
-    placeholder: createPlaceholderSvg('\u{1F4C9}', 'NOT STONKS', '#7f1d1d'),
-  },
-  {
-    id: 'meme-surprised',
-    name: 'SURPRISED',
-    color: '#eab308',
-    emoji: '\u{1F62E}',
-    placeholder: createPlaceholderSvg('\u{1F62E}', 'SURPRISED', '#713f12'),
-  },
-  {
-    id: 'meme-galaxy-brain',
-    name: 'GALAXY BRAIN',
-    color: '#a855f7',
-    emoji: '\u{1F9E0}',
-    placeholder: createPlaceholderSvg('\u{1F9E0}', 'GALAXY BRAIN', '#581c87'),
-  },
-  {
-    id: 'meme-money-printer',
-    name: 'MONEY PRINTER',
-    color: '#22c55e',
-    emoji: '\u{1F4B8}',
-    placeholder: createPlaceholderSvg('\u{1F4B8}', 'MONEY PRINTER GO BRRR', '#14532d'),
-  },
-  {
-    id: 'meme-cope',
-    name: 'COPE',
-    color: '#3b82f6',
-    emoji: '\u{1F62D}',
-    placeholder: createPlaceholderSvg('\u{1F62D}', 'COPE', '#1e3a5f'),
-  },
-  {
-    id: 'meme-rug-pull',
-    name: 'RUG PULL',
+    id: 'meme-drake',
+    name: 'DRAKE',
     color: '#f97316',
-    emoji: '\u{1F9F9}',
-    placeholder: createPlaceholderSvg('\u{1F9F9}', 'RUG PULL', '#7c2d12'),
+    placeholder: '/memes/drake.jpg',
   },
   {
-    id: 'meme-diamond-hands',
-    name: 'DIAMOND HANDS',
-    color: '#06b6d4',
-    emoji: '\u{1F48E}',
-    placeholder: createPlaceholderSvg('\u{1F48E}', 'DIAMOND HANDS', '#164e63'),
+    id: 'meme-distracted-bf',
+    name: 'DISTRACTED BF',
+    color: '#eab308',
+    placeholder: '/memes/distracted-bf.jpg',
   },
   {
-    id: 'meme-paper-hands',
-    name: 'PAPER HANDS',
-    color: '#f59e0b',
-    emoji: '\u{1F9FB}',
-    placeholder: createPlaceholderSvg('\u{1F9FB}', 'PAPER HANDS', '#78350f'),
+    id: 'meme-always-has-been',
+    name: 'ALWAYS HAS BEEN',
+    color: '#22c55e',
+    placeholder: '/memes/always-has-been.png',
   },
   {
-    id: 'meme-trust-me-bro',
-    name: 'TRUST ME BRO',
+    id: 'meme-trade-offer',
+    name: 'TRADE OFFER',
+    color: '#3b82f6',
+    placeholder: '/memes/trade-offer.jpg',
+  },
+  {
+    id: 'meme-expanding-brain',
+    name: 'EXPANDING BRAIN',
+    color: '#a855f7',
+    placeholder: '/memes/expanding-brain.jpg',
+  },
+  {
+    id: 'meme-change-my-mind',
+    name: 'CHANGE MY MIND',
     color: '#ec4899',
-    emoji: '\u{1F913}',
-    placeholder: createPlaceholderSvg('\u{1F913}', 'TRUST ME BRO', '#831843'),
+    placeholder: '/memes/change-my-mind.jpg',
   },
   {
-    id: 'meme-to-the-moon',
-    name: 'TO THE MOON',
-    color: '#8b5cf6',
-    emoji: '\u{1F680}',
-    placeholder: createPlaceholderSvg('\u{1F680}', 'TO THE MOON', '#4c1d95'),
+    id: 'meme-woman-yelling-cat',
+    name: 'WOMAN YELLING',
+    color: '#06b6d4',
+    placeholder: '/memes/woman-yelling-cat.jpg',
   },
   {
-    id: 'meme-dumpeet',
-    name: 'DUMP EET',
-    color: '#f43f5e',
-    emoji: '\u{1F4DE}',
-    placeholder: createPlaceholderSvg('\u{1F4DE}', 'DUMP EET', '#881337'),
+    id: 'meme-same-picture',
+    name: 'SAME PICTURE',
+    color: '#84cc16',
+    placeholder: '/memes/same-picture.jpg',
   },
   {
-    id: 'meme-wen-lambo',
-    name: 'WEN LAMBO',
-    color: '#d946ef',
-    emoji: '\u{1F3CE}\u{FE0F}',
-    placeholder: createPlaceholderSvg('\u{1F3CE}\u{FE0F}', 'WEN LAMBO', '#701a75'),
+    id: 'meme-clown-makeup',
+    name: 'CLOWN MAKEUP',
+    color: '#f59e0b',
+    placeholder: '/memes/clown-makeup.jpg',
   },
   {
-    id: 'meme-buy-the-dip',
-    name: 'BUY THE DIP',
+    id: 'meme-getting-paid',
+    name: 'GETTING PAID?',
     color: '#14b8a6',
-    emoji: '\u{1F4B0}',
-    placeholder: createPlaceholderSvg('\u{1F4B0}', 'BUY THE DIP', '#134e4a'),
+    placeholder: '/memes/you-guys-getting-paid.png',
   },
   {
-    id: 'meme-its-over',
-    name: "IT'S OVER",
+    id: 'meme-sad-pablo',
+    name: 'SAD PABLO',
     color: '#6366f1',
-    emoji: '\u{1F480}',
-    placeholder: createPlaceholderSvg('\u{1F480}', "IT'S OVER", '#312e81'),
+    placeholder: '/memes/sad-pablo.jpg',
+  },
+  {
+    id: 'meme-laughing-leo',
+    name: 'LAUGHING LEO',
+    color: '#d946ef',
+    placeholder: '/memes/laughing-leo.png',
+  },
+  {
+    id: 'meme-anakin-padme',
+    name: 'ANAKIN & PADME',
+    color: '#f43f5e',
+    placeholder: '/memes/anakin-padme.png',
+  },
+  {
+    id: 'meme-buff-doge',
+    name: 'BUFF DOGE',
+    color: '#8b5cf6',
+    placeholder: '/memes/buff-doge-cheems.png',
+  },
+  {
+    id: 'meme-roll-safe',
+    name: 'ROLL SAFE',
+    color: '#10b981',
+    placeholder: '/memes/roll-safe.jpg',
   },
 ]

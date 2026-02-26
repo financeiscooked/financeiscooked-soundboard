@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { StopCircle } from 'lucide-react'
 import SoundButton from './SoundButton'
 import EditModal from './EditModal'
-import { DEFAULT_SOUNDS } from '../sounds/synthesizer'
+import { DEFAULT_SOUNDS, EXTRA_SOUNDS } from '../sounds/synthesizer'
 import {
   saveCustomSound,
   getAllCustomSounds,
@@ -10,6 +10,46 @@ import {
   saveButtonConfig,
   getAllButtonConfigs,
 } from '../utils/storage'
+
+const ALL_DEFAULTS = [...DEFAULT_SOUNDS, ...EXTRA_SOUNDS]
+
+function buildSlots(defaults, customSounds, configs) {
+  const customMap = {}
+  customSounds.forEach((s) => (customMap[s.id] = s))
+  const configMap = {}
+  configs.forEach((c) => (configMap[c.id] = c))
+
+  return defaults.map((defaultSound, index) => {
+    const slotId = defaultSound.id
+    const custom = customMap[slotId]
+    const config = configMap[slotId]
+
+    if (custom) {
+      const blob = new Blob([custom.data], { type: custom.type })
+      const url = URL.createObjectURL(blob)
+      return {
+        index,
+        id: slotId,
+        name: config?.name || custom.name,
+        color: config?.color || defaultSound.color,
+        customAudioUrl: url,
+        isCustom: true,
+        originalFileName: custom.originalName,
+        defaultSound,
+      }
+    }
+
+    return {
+      index,
+      id: slotId,
+      name: config?.name || defaultSound.name,
+      color: config?.color || defaultSound.color,
+      customAudioUrl: null,
+      isCustom: false,
+      defaultSound,
+    }
+  })
+}
 
 export default function SoundBoard() {
   const [slots, setSlots] = useState([])
@@ -20,46 +60,8 @@ export default function SoundBoard() {
     async function loadSlots() {
       const customSounds = await getAllCustomSounds()
       const configs = await getAllButtonConfigs()
-
-      const customMap = {}
-      customSounds.forEach((s) => (customMap[s.id] = s))
-      const configMap = {}
-      configs.forEach((c) => (configMap[c.id] = c))
-
-      const loadedSlots = DEFAULT_SOUNDS.map((defaultSound, index) => {
-        const slotId = defaultSound.id
-        const custom = customMap[slotId]
-        const config = configMap[slotId]
-
-        if (custom) {
-          const blob = new Blob([custom.data], { type: custom.type })
-          const url = URL.createObjectURL(blob)
-          return {
-            index,
-            id: slotId,
-            name: config?.name || custom.name,
-            color: config?.color || defaultSound.color,
-            customAudioUrl: url,
-            isCustom: true,
-            originalFileName: custom.originalName,
-            defaultSound,
-          }
-        }
-
-        return {
-          index,
-          id: slotId,
-          name: config?.name || defaultSound.name,
-          color: config?.color || defaultSound.color,
-          customAudioUrl: null,
-          isCustom: false,
-          defaultSound,
-        }
-      })
-
-      setSlots(loadedSlots)
+      setSlots(buildSlots(ALL_DEFAULTS, customSounds, configs))
     }
-
     loadSlots()
   }, [])
 
@@ -82,37 +84,16 @@ export default function SoundBoard() {
 
       const customSounds = await getAllCustomSounds()
       const configs = await getAllButtonConfigs()
-      const customMap = {}
-      customSounds.forEach((s) => (customMap[s.id] = s))
-      const configMap = {}
-      configs.forEach((c) => (configMap[c.id] = c))
 
-      setSlots((prev) =>
-        prev.map((s) => {
-          if (s.id !== slot.id) return s
-          const custom = customMap[s.id]
-          const config = configMap[s.id]
-          const defaultSound = DEFAULT_SOUNDS.find((d) => d.id === s.id)
-
-          if (custom) {
-            if (s.customAudioUrl) URL.revokeObjectURL(s.customAudioUrl)
-            const blob = new Blob([custom.data], { type: custom.type })
-            const url = URL.createObjectURL(blob)
-            return {
-              ...s,
-              name: config?.name || custom.name,
-              customAudioUrl: url,
-              isCustom: true,
-              originalFileName: custom.originalName,
-            }
-          }
-
-          return {
-            ...s,
-            name: config?.name || defaultSound.name,
+      setSlots((prev) => {
+        // Revoke old blob URLs
+        prev.forEach((s) => {
+          if (s.id === slot.id && s.customAudioUrl) {
+            URL.revokeObjectURL(s.customAudioUrl)
           }
         })
-      )
+        return buildSlots(ALL_DEFAULTS, customSounds, configs)
+      })
 
       setEditingSlot(null)
     },
@@ -123,13 +104,15 @@ export default function SoundBoard() {
     if (!editingSlot) return
     await deleteCustomSound(editingSlot.id)
 
-    setSlots((prev) =>
-      prev.map((s) => {
-        if (s.id !== editingSlot.id) return s
-        const defaultSound = DEFAULT_SOUNDS.find((d) => d.id === s.id)
-        if (s.customAudioUrl) URL.revokeObjectURL(s.customAudioUrl)
+    setSlots((prev) => {
+      const s = prev.find((s) => s.id === editingSlot.id)
+      if (s?.customAudioUrl) URL.revokeObjectURL(s.customAudioUrl)
+
+      return prev.map((slot) => {
+        if (slot.id !== editingSlot.id) return slot
+        const defaultSound = ALL_DEFAULTS.find((d) => d.id === slot.id)
         return {
-          ...s,
+          ...slot,
           name: defaultSound.name,
           color: defaultSound.color,
           customAudioUrl: null,
@@ -137,10 +120,13 @@ export default function SoundBoard() {
           originalFileName: null,
         }
       })
-    )
+    })
 
     setEditingSlot(null)
   }, [editingSlot])
+
+  const mainSlots = slots.slice(0, 16)
+  const extraSlots = slots.slice(16)
 
   return (
     <>
@@ -156,10 +142,11 @@ export default function SoundBoard() {
         </button>
       </div>
 
-      {/* Sound Grid */}
-      <div className="flex-1 p-4 flex items-center justify-center">
+      {/* Scrollable content */}
+      <div className="flex-1 p-4 overflow-y-auto flex flex-col items-center gap-6">
+        {/* Main Sound Grid */}
         <div className="grid grid-cols-4 gap-3 w-full max-w-4xl" style={{ gridAutoRows: '1fr' }}>
-          {slots.map((slot) => (
+          {mainSlots.map((slot) => (
             <SoundButton
               key={slot.id}
               slot={slot}
@@ -168,6 +155,31 @@ export default function SoundBoard() {
             />
           ))}
         </div>
+
+        {/* Divider */}
+        {extraSlots.length > 0 && (
+          <div className="w-full max-w-4xl flex items-center gap-4">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-white/20 text-xs font-bold tracking-widest uppercase">
+              Movies & Classics
+            </span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+        )}
+
+        {/* Extra Sound Grid */}
+        {extraSlots.length > 0 && (
+          <div className="grid grid-cols-4 gap-3 w-full max-w-4xl" style={{ gridAutoRows: '1fr' }}>
+            {extraSlots.map((slot) => (
+              <SoundButton
+                key={slot.id}
+                slot={slot}
+                onEdit={handleEdit}
+                stopAllSignal={stopAllSignal}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Footer hint */}

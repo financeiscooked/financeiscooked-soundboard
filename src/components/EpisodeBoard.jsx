@@ -16,6 +16,8 @@ import {
   Pause,
   RotateCcw,
   Info,
+  ArrowUpToLine,
+  ArrowDownToLine,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -286,6 +288,39 @@ export default function EpisodeBoard() {
   const [viewMode, setViewMode] = useState('show')
   const [expandedSegments, setExpandedSegments] = useState(new Set())
 
+  // Status overrides (localStorage)
+  const [statusOverrides, setStatusOverrides] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('fic-status-overrides') || '{}')
+    } catch { return {} }
+  })
+
+  const getEffectiveStatus = useCallback((epId, segId, originalStatus) => {
+    const key = `${epId}:${segId}`
+    return statusOverrides[key] || originalStatus
+  }, [statusOverrides])
+
+  const pushToShow = useCallback((segId) => {
+    if (!currentEpId) return
+    const key = `${currentEpId}:${segId}`
+    setStatusOverrides((prev) => {
+      const next = { ...prev, [key]: 'final' }
+      localStorage.setItem('fic-status-overrides', JSON.stringify(next))
+      return next
+    })
+  }, [currentEpId])
+
+  const pullFromShow = useCallback((segId) => {
+    if (!currentEpId) return
+    const key = `${currentEpId}:${segId}`
+    setStatusOverrides((prev) => {
+      const next = { ...prev }
+      delete next[key]
+      localStorage.setItem('fic-status-overrides', JSON.stringify(next))
+      return next
+    })
+  }, [currentEpId])
+
   // Show timer
   const [timerRunning, setTimerRunning] = useState(false)
   const [elapsedMs, setElapsedMs] = useState(0)
@@ -349,11 +384,20 @@ export default function EpisodeBoard() {
 
   const allSegments = episode?.segments || []
 
+  // Apply status overrides to segments
+  const effectiveSegments = useMemo(() => {
+    if (!currentEpId) return allSegments
+    return allSegments.map((seg) => ({
+      ...seg,
+      status: getEffectiveStatus(currentEpId, seg.id, seg.status || 'proposed'),
+    }))
+  }, [allSegments, currentEpId, getEffectiveStatus])
+
   // Filter segments based on view mode
   const segments = useMemo(() => {
-    if (viewMode === 'show') return allSegments.filter((s) => s.status === 'final')
-    return allSegments // prep mode shows all
-  }, [allSegments, viewMode])
+    if (viewMode === 'show') return effectiveSegments.filter((s) => s.status === 'final')
+    return effectiveSegments // prep mode shows all
+  }, [effectiveSegments, viewMode])
 
   // Clamp indices to valid range to prevent crashes on view mode switch
   const safeSegIdx = Math.min(activeSegmentIdx, Math.max(segments.length - 1, 0))
@@ -371,8 +415,8 @@ export default function EpisodeBoard() {
   globalSlideIdx += safeSlideIdx
 
   // Stats for the current episode
-  const finalCount = allSegments.filter((s) => s.status === 'final').length
-  const proposedCount = allSegments.filter((s) => s.status !== 'final').length
+  const finalCount = effectiveSegments.filter((s) => s.status === 'final').length
+  const proposedCount = effectiveSegments.filter((s) => s.status !== 'final').length
 
   const goNext = useCallback(() => {
     if (activeSlideIdx < slides.length - 1) {
@@ -607,6 +651,26 @@ export default function EpisodeBoard() {
                           {seg.slides.length} slide{seg.slides.length !== 1 ? 's' : ''}
                         </span>
                       </button>
+                      {/* Push to Show / Pull from Show */}
+                      {viewMode === 'prep' && seg.slides.length > 0 && (
+                        segStatus === 'final' ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); pullFromShow(seg.id) }}
+                            className="p-1 rounded hover:bg-[var(--bg-hover)] text-emerald-400 hover:text-yellow-400 transition-colors flex-shrink-0"
+                            title="Pull from Show"
+                          >
+                            <ArrowDownToLine size={12} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); pushToShow(seg.id) }}
+                            className="p-1 rounded hover:bg-[var(--bg-hover)] text-yellow-400 hover:text-emerald-400 transition-colors flex-shrink-0"
+                            title="Push to Show"
+                          >
+                            <ArrowUpToLine size={12} />
+                          </button>
+                        )
+                      )}
                     </div>
                     {/* Slide sub-items */}
                     {isExpanded && seg.slides.length > 0 && (

@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
-import { Volume2, Image } from 'lucide-react'
+import { Volume2, Image, Tv } from 'lucide-react'
 import SoundBoard from './components/SoundBoard'
 import MemeBoard from './components/MemeBoard'
+import EpisodeBoard from './components/EpisodeBoard'
+
+const TABS = [
+  { id: 'sounds', label: 'Soundboard', icon: Volume2 },
+  { id: 'memes', label: 'Meme Board', icon: Image },
+  { id: 'episodes', label: 'Episodes', icon: Tv },
+]
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('sounds')
@@ -31,35 +38,32 @@ export default function App() {
 
           {/* Tabs */}
           <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
-            <button
-              onClick={() => setActiveTab('sounds')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all
-                ${activeTab === 'sounds'
-                  ? 'bg-white/10 text-white shadow-lg'
-                  : 'text-white/35 hover:text-white/60'
-                }`}
-            >
-              <Volume2 size={14} />
-              Soundboard
-            </button>
-            <button
-              onClick={() => setActiveTab('memes')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all
-                ${activeTab === 'memes'
-                  ? 'bg-white/10 text-white shadow-lg'
-                  : 'text-white/35 hover:text-white/60'
-                }`}
-            >
-              <Image size={14} />
-              Meme Board
-            </button>
+            {TABS.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all
+                    ${activeTab === tab.id
+                      ? 'bg-white/10 text-white shadow-lg'
+                      : 'text-white/35 hover:text-white/60'
+                    }`}
+                >
+                  <Icon size={14} />
+                  {tab.label}
+                </button>
+              )
+            })}
           </div>
         </div>
       </header>
 
       {/* Active Board */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        {activeTab === 'sounds' ? <SoundBoard /> : <MemeBoard />}
+        {activeTab === 'sounds' && <SoundBoard />}
+        {activeTab === 'memes' && <MemeBoard />}
+        {activeTab === 'episodes' && <EpisodeBoard />}
       </div>
     </div>
   )

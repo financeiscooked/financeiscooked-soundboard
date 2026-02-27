@@ -15,7 +15,30 @@ import {
   Play,
   Pause,
   RotateCcw,
+  Info,
 } from 'lucide-react'
+
+function DetailsExpander({ details }) {
+  const [open, setOpen] = useState(false)
+  if (!details) return null
+  return (
+    <div className="w-full max-w-2xl mt-4">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-bold uppercase tracking-wider transition-colors"
+      >
+        <Info size={12} />
+        Details
+        {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+      </button>
+      {open && (
+        <div className="mt-3 p-4 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-default)] text-[var(--text-secondary)] text-sm leading-relaxed whitespace-pre-line">
+          {details}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const VIEW_MODES = [
   { id: 'show', label: 'Show', description: 'Final segments only' },
@@ -51,6 +74,7 @@ function SlideRenderer({ slide }) {
         {slide.notes && (
           <p className="text-[var(--text-tertiary)] text-sm max-w-xl text-center">{slide.notes}</p>
         )}
+        <DetailsExpander details={slide.details} />
       </div>
     )
   }
@@ -69,6 +93,7 @@ function SlideRenderer({ slide }) {
         {slide.notes && (
           <p className="text-[var(--text-tertiary)] text-sm max-w-xl text-center">{slide.notes}</p>
         )}
+        <DetailsExpander details={slide.details} />
       </div>
     )
   }
@@ -78,14 +103,14 @@ function SlideRenderer({ slide }) {
       <div className="max-w-2xl w-full">
         <div className="bg-[var(--bg-subtle)] border border-[var(--border-default)] rounded-2xl p-8">
           <div className="flex items-start gap-3 mb-4">
-            <LinkIcon size={20} className="text-blue-400 mt-1 flex-shrink-0" />
+            <LinkIcon size={20} className="text-[#4A9FD9] mt-1 flex-shrink-0" />
             <div>
               <h3 className="text-[var(--text-primary)] text-xl font-bold leading-tight">{slide.title}</h3>
               <a
                 href={slide.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400/60 text-xs hover:text-blue-400 transition-colors break-all mt-1 block"
+                className="text-[#4A9FD9]/60 text-xs hover:text-[#4A9FD9] transition-colors break-all mt-1 block"
               >
                 {slide.url}
               </a>
@@ -96,6 +121,7 @@ function SlideRenderer({ slide }) {
               {slide.notes}
             </p>
           )}
+          <DetailsExpander details={slide.details} />
         </div>
       </div>
     )
@@ -109,7 +135,7 @@ function SlideRenderer({ slide }) {
             <ul className="space-y-3">
               {slide.bullets.map((bullet, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="text-red-400 mt-1.5 text-xs">&#9679;</span>
+                  <span className="text-[#D94E2A] mt-1.5 text-xs">&#9679;</span>
                   <span className="text-[var(--text-secondary)] text-lg leading-relaxed">{bullet}</span>
                 </li>
               ))}
@@ -118,6 +144,7 @@ function SlideRenderer({ slide }) {
           {slide.notes && (
             <p className="text-[var(--text-tertiary)] text-sm mt-6">{slide.notes}</p>
           )}
+          <DetailsExpander details={slide.details} />
         </div>
       </div>
     )
@@ -129,7 +156,7 @@ function SlideRenderer({ slide }) {
 function SlideTypeIcon({ type }) {
   if (type === 'gallery') return <ImageIcon size={9} className="text-pink-400/60 flex-shrink-0" />
   if (type === 'image') return <ImageIcon size={9} className="text-purple-400/60 flex-shrink-0" />
-  if (type === 'link') return <LinkIcon size={9} className="text-blue-400/60 flex-shrink-0" />
+  if (type === 'link') return <LinkIcon size={9} className="text-[#4A9FD9]/60 flex-shrink-0" />
   return <FileText size={9} className="text-[var(--text-muted)] flex-shrink-0" />
 }
 
@@ -551,7 +578,7 @@ export default function EpisodeBoard() {
                     <div
                       className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-all border-l-2 flex items-center gap-1
                         ${isActive
-                          ? 'bg-[var(--bg-active)] text-[var(--text-primary)] border-red-400'
+                          ? 'bg-[var(--bg-active)] text-[var(--text-primary)] border-[#D94E2A]'
                           : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] border-transparent'
                         }`}
                     >
@@ -628,7 +655,7 @@ export default function EpisodeBoard() {
             <div className="flex items-center gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-red-400 text-xs font-bold tracking-widest uppercase">
+                  <span className="text-[#D94E2A] text-xs font-bold tracking-widest uppercase">
                     {currentSegment?.name}
                   </span>
                   {currentSegment && <StatusBadge status={currentSegment.status || 'proposed'} />}
@@ -649,7 +676,7 @@ export default function EpisodeBoard() {
                   onClick={toggleTimer}
                   className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-3xl font-mono font-bold transition-all
                     ${timerRunning
-                      ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
+                      ? 'bg-red-500/15 text-[#D94E2A] hover:bg-red-500/25'
                       : elapsedMs > 0
                         ? 'bg-yellow-500/15 text-yellow-400 hover:bg-yellow-500/25'
                         : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
@@ -703,7 +730,7 @@ export default function EpisodeBoard() {
                   key={i}
                   onClick={() => setActiveSlideIdx(i)}
                   className={`w-2 h-2 rounded-full transition-all
-                    ${i === activeSlideIdx ? 'bg-red-400 w-4' : 'bg-[var(--text-faint)] hover:bg-[var(--text-muted)]'}`}
+                    ${i === activeSlideIdx ? 'bg-[#D94E2A] w-4' : 'bg-[var(--text-faint)] hover:bg-[var(--text-muted)]'}`}
                 />
               ))}
             </div>

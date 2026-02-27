@@ -134,7 +134,7 @@ export default function SoundBoard() {
       <div className="absolute top-4 right-6 z-10">
         <button
           onClick={() => setStopAllSignal((s) => s + 1)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors text-xs font-bold tracking-wider uppercase"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#D94E2A]/10 hover:bg-[#D94E2A]/20 text-[#D94E2A] hover:text-[#D94E2A]/80 transition-colors text-xs font-bold tracking-wider uppercase"
           title="Stop all sounds"
         >
           <StopCircle size={16} />

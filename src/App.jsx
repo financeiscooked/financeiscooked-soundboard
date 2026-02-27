@@ -22,8 +22,8 @@ export default function App() {
         <div className="flex items-center gap-4">
           {/* Logo / ON AIR indicator */}
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-lg shadow-red-500/50" />
-            <span className="text-red-400 text-xs font-bold tracking-widest uppercase">
+            <div className="w-3 h-3 rounded-full bg-[#D94E2A] animate-pulse shadow-lg shadow-[#D94E2A]/50" />
+            <span className="text-[#D94E2A] text-xs font-bold tracking-widest uppercase">
               On Air
             </span>
           </div>
@@ -32,8 +32,8 @@ export default function App() {
 
           <h1 className="font-russo text-xl tracking-wide">
             <span className="text-[var(--text-primary)]">finance</span>
-            <span className="text-red-400">is</span>
-            <span className="text-[var(--text-primary)]">cooked</span>
+            <span className="text-[#D94E2A]">is</span>
+            <span className="text-[#F0A030]">cooked</span>
           </h1>
 
           <div className="w-px h-6 bg-[var(--divider-px)]" />

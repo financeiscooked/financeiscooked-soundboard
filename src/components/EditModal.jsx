@@ -116,7 +116,7 @@ export default function EditModal({ slot, onSave, onReset, onClose }) {
           <button
             onClick={handleSave}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold
-                       bg-blue-500 hover:bg-blue-400 text-white transition-all"
+                       bg-[#2B3A5C] hover:bg-[#3a4d75] text-white transition-all"
           >
             <Check size={14} />
             Save

@@ -204,6 +204,12 @@
             "ficsoundboard.netlify.app",
             "Finance Is Cooked - let's make sure you're a chef"
           ]
+        },
+        {
+          "type": "link",
+          "title": "Outtro Music",
+          "url": "https://suno.com/s/kaRqVok2hZaNQqM0",
+          "notes": "Play outtro music locally while closing out"
         }
       ]
     }

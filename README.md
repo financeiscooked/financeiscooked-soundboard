@@ -8,7 +8,7 @@ Live show companion app for **Finance Is Cooked** — a weekly show about AI dis
 
 1. **Soundboard** — 28 instant sound effects for live show production (air horn, Herm Edwards, Law & Order, etc.)
 2. **Meme Board** — 16 meme buttons that pop up fullscreen for on-air reactions
-3. **Episodes** — Slide presenter for show segments (news, takes, demos). Navigate with arrow keys during the live show.
+3. **Episodes** — Slide presenter for show segments (news, takes, demos). Three view modes: **Show** (final only), **Prep** (all segments), **Proposed Bank** (all proposed across every episode). Navigate with arrow keys during the live show.
 
 ## For AI Agents: Updating Episode Content
 
@@ -16,11 +16,15 @@ Live show companion app for **Finance Is Cooked** — a weekly show about AI dis
 
 That file contains the complete specification for:
 - Episode JSON structure and all slide types
+- **Proposed vs Final segment workflow** (new content = proposed, hosts finalize)
 - How to add, remove, and reorder slides and segments
+- How to copy proposed segments across episodes
 - How to add images
 - How to create new episodes
 - File naming conventions
 - Deployment workflow
+
+**Key rule:** When adding any new content, always set `"status": "proposed"`. Only change to `"final"` when the hosts explicitly confirm.
 
 Any time you are asked to update show content (add a news article, create a segment, add an image to a slide, create a new episode, etc.), follow the instructions in `EPISODE_GUIDE.md` exactly.
 

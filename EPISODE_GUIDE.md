@@ -27,6 +27,42 @@ public/episodes/
 
 ---
 
+## Segment Status: Proposed vs Final
+
+Every segment has a `status` field — either `"proposed"` or `"final"`.
+
+### How It Works
+
+- **`"proposed"`** — The segment is a draft/idea. It is NOT part of the live show rundown yet.
+- **`"final"`** — The segment is confirmed for the show. It appears in Show Mode.
+
+### Rules for AI Agents
+
+1. **When adding ANY new segment or content, ALWAYS set `"status": "proposed"`.**
+   - Never set a segment to `"final"` unless explicitly told to by the hosts.
+   - Example: "Add a vibecoding segment to EP3" → add it with `"status": "proposed"`
+
+2. **Only change status to `"final"` when the hosts explicitly say so.**
+   - Example: "Move the vibecoding segment to final" → change `"status"` from `"proposed"` to `"final"`
+   - The hosts may also ask for edits at the same time: "Move it to final and rename it to X"
+
+3. **Segments without a `status` field default to `"proposed"` in the UI.**
+   - But you should always include the field explicitly.
+
+### UI View Modes
+
+The app has three view modes:
+
+| Mode | What It Shows |
+|---|---|
+| **Show** | Only `"final"` segments — this is the live show rundown |
+| **Prep** | ALL segments (both proposed and final) — for review and planning |
+| **Proposed Bank** | All `"proposed"` segments across EVERY episode — for cherry-picking ideas |
+
+The **Proposed Bank** is important: hosts may see a proposed segment from EP1 and decide to use it in EP5. When this happens, they'll tell an agent to move or copy it.
+
+---
+
 ## Episode JSON Structure
 
 ```json
@@ -38,10 +74,19 @@ public/episodes/
     {
       "id": "cold-open",
       "name": "Cold Open + Intro",
+      "status": "final",
       "slides": [
         { "type": "image", "title": "Show Logo", "src": "/episodes/ep1/logo.png" },
         { "type": "text", "title": "Welcome", "bullets": ["Point 1", "Point 2"] },
         { "type": "link", "title": "Article Name", "url": "https://...", "notes": "Context here" }
+      ]
+    },
+    {
+      "id": "hot-take",
+      "name": "Hot Take: Vibecoding",
+      "status": "proposed",
+      "slides": [
+        { "type": "text", "title": "Vibecoding Is Real", "bullets": ["Everyone is doing it", "Is it sustainable?"] }
       ]
     }
   ]
@@ -152,21 +197,14 @@ Add to the "quick-updates" segment's slides array:
 }
 ```
 
-### REMOVE a slide
+### ADD a new segment (always as proposed)
 
-1. Read the episode JSON
-2. Find and remove the slide object from the segment's `slides` array
-3. If it was an image slide, optionally delete the image file too (not required)
-4. Write the updated JSON
-5. Commit and push
-
-### CREATE a new segment
-
-Add a new segment object to the `segments` array at the desired position:
+Add a new segment object to the `segments` array. **Always set `"status": "proposed"`:**
 ```json
 {
   "id": "sponsor-break",
   "name": "Sponsor Break",
+  "status": "proposed",
   "slides": [
     {
       "type": "image",
@@ -176,6 +214,38 @@ Add a new segment object to the `segments` array at the desired position:
   ]
 }
 ```
+
+### MOVE a segment to final
+
+When told to finalize a segment, change its `"status"` from `"proposed"` to `"final"`:
+```json
+{
+  "id": "sponsor-break",
+  "name": "Sponsor Break",
+  "status": "final",
+  ...
+}
+```
+
+### COPY a proposed segment from one episode to another
+
+When told to use a proposed segment from another episode:
+1. Read the source episode JSON and find the proposed segment
+2. Read the target episode JSON
+3. Copy the segment object into the target episode's `segments` array
+4. Update any image `src` paths to point to the target episode's folder (e.g., change `/episodes/ep1/` to `/episodes/ep5/`)
+5. Copy any referenced image files to the target episode's folder
+6. Set the status as instructed (usually `"proposed"` unless told otherwise)
+7. Write both files back (optionally remove from source if told to "move" rather than "copy")
+8. Commit and push
+
+### REMOVE a slide
+
+1. Read the episode JSON
+2. Find and remove the slide object from the segment's `slides` array
+3. If it was an image slide, optionally delete the image file too (not required)
+4. Write the updated JSON
+5. Commit and push
 
 ### REMOVE a segment
 
@@ -197,6 +267,7 @@ Change the order of segment objects in the `segments` array. First item = first 
    - Copy structure from a previous episode as template
    - Update `id`, `title`, and `date`
    - Clear out slide content (or keep skeleton segments with empty slides)
+   - **Set all segments to `"status": "proposed"`** — nothing is final until the hosts confirm
 2. The folder `public/episodes/ep{N}/` already exists (pre-created up to ep50)
 3. Add the episode to `public/episodes/index.json`:
 ```json
@@ -218,6 +289,7 @@ ep['title'] = 'Episode 2 - TBD'
 ep['date'] = '2026-03-12'
 for seg in ep['segments']:
     seg['slides'] = []
+    seg['status'] = 'proposed'
 print(json.dumps(ep, indent=2))
 " > public/episodes/ep2.json
 ```
@@ -275,5 +347,7 @@ https://ficsoundboard.netlify.app/
 - The episode picker shows all episodes from `index.json`
 - Slides render in order — first slide in array shows first
 - Segments render in sidebar in order — first segment in array is top
+- **Always include `"status"` on every segment** — either `"proposed"` or `"final"`
+- **New content = proposed. Only hosts can finalize.**
 - Always validate JSON before committing (no trailing commas, proper quoting)
 - When in doubt, read the existing `ep1.json` as a reference

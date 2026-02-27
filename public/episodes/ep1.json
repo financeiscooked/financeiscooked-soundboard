@@ -6,6 +6,7 @@
     {
       "id": "cold-open",
       "name": "Cold Open + Intro",
+      "status": "final",
       "slides": [
         {
           "type": "image",
@@ -46,6 +47,7 @@
     {
       "id": "app-of-the-show",
       "name": "App of the Show",
+      "status": "final",
       "slides": [
         {
           "type": "text",
@@ -71,6 +73,7 @@
     {
       "id": "quick-updates",
       "name": "90 Seconds Quick Updates",
+      "status": "final",
       "slides": [
         {
           "type": "link",
@@ -107,6 +110,7 @@
     {
       "id": "take-of-the-show",
       "name": "Take of the Show",
+      "status": "final",
       "slides": [
         {
           "type": "text",
@@ -130,6 +134,7 @@
     {
       "id": "ai-thing",
       "name": "One Thing I Did with AI",
+      "status": "final",
       "slides": [
         {
           "type": "text",
@@ -145,6 +150,7 @@
     {
       "id": "app-checkin",
       "name": "Check In on App of the Show",
+      "status": "final",
       "slides": [
         {
           "type": "text",
@@ -160,6 +166,7 @@
     {
       "id": "whats-coming",
       "name": "What's Coming",
+      "status": "final",
       "slides": [
         {
           "type": "text",
@@ -177,6 +184,7 @@
     {
       "id": "outtro",
       "name": "Outtro",
+      "status": "final",
       "slides": [
         {
           "type": "image",

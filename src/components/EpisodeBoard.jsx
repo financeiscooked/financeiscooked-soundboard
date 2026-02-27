@@ -6,9 +6,12 @@ import {
   FileText,
   ImageIcon,
   ChevronDown,
+  ChevronUp,
   Circle,
   CheckCircle2,
   Archive,
+  ChevronsUpDown,
+  ChevronsDownUp,
 } from 'lucide-react'
 
 const VIEW_MODES = [
@@ -87,6 +90,12 @@ function SlideRenderer({ slide }) {
   }
 
   return null
+}
+
+function SlideTypeIcon({ type }) {
+  if (type === 'image') return <ImageIcon size={9} className="text-purple-400/60 flex-shrink-0" />
+  if (type === 'link') return <LinkIcon size={9} className="text-blue-400/60 flex-shrink-0" />
+  return <FileText size={9} className="text-white/30 flex-shrink-0" />
 }
 
 function StatusDot({ status }) {
@@ -213,6 +222,7 @@ export default function EpisodeBoard() {
   const [activeSlideIdx, setActiveSlideIdx] = useState(0)
   const [epDropdownOpen, setEpDropdownOpen] = useState(false)
   const [viewMode, setViewMode] = useState('show')
+  const [expandedSegments, setExpandedSegments] = useState(new Set())
 
   // Load episode list
   useEffect(() => {
@@ -279,9 +289,35 @@ export default function EpisodeBoard() {
     }
   }, [activeSlideIdx, activeSegmentIdx, segments])
 
+  const toggleSegmentExpanded = useCallback((segId) => {
+    setExpandedSegments((prev) => {
+      const next = new Set(prev)
+      if (next.has(segId)) next.delete(segId)
+      else next.add(segId)
+      return next
+    })
+  }, [])
+
+  const expandAll = useCallback(() => {
+    setExpandedSegments(new Set(segments.map((s) => s.id)))
+  }, [segments])
+
+  const collapseAll = useCallback(() => {
+    setExpandedSegments(new Set())
+  }, [])
+
   const jumpToSegment = useCallback((idx) => {
     setActiveSegmentIdx(idx)
     setActiveSlideIdx(0)
+    // Auto-expand the clicked segment
+    if (segments[idx]) {
+      setExpandedSegments((prev) => new Set(prev).add(segments[idx].id))
+    }
+  }, [segments])
+
+  const jumpToSlide = useCallback((segIdx, slideIdx) => {
+    setActiveSegmentIdx(segIdx)
+    setActiveSlideIdx(slideIdx)
   }, [])
 
   // Jump to a specific episode + segment (used by Proposed Bank)
@@ -403,35 +439,97 @@ export default function EpisodeBoard() {
 
         {/* Segment list (hidden in bank view) */}
         {viewMode !== 'bank' && (
-          <div className="flex-1 overflow-y-auto py-2">
+          <div className="flex-1 overflow-y-auto flex flex-col">
+            {/* Expand / Collapse all */}
+            {segments.length > 0 && (
+              <div className="flex items-center justify-end gap-1 px-3 pt-2 pb-1">
+                <button
+                  onClick={expandAll}
+                  title="Expand all"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/5 transition-colors"
+                >
+                  <ChevronsUpDown size={10} />
+                  Expand
+                </button>
+                <button
+                  onClick={collapseAll}
+                  title="Collapse all"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/5 transition-colors"
+                >
+                  <ChevronsDownUp size={10} />
+                  Collapse
+                </button>
+              </div>
+            )}
             {segments.length === 0 && (
               <div className="px-4 py-8 text-center text-white/20 text-xs">
                 {viewMode === 'show' ? 'No final segments yet' : 'No segments'}
               </div>
             )}
-            {segments.map((seg, idx) => {
-              const isActive = idx === activeSegmentIdx
-              const segStatus = seg.status || 'proposed'
-              return (
-                <button
-                  key={seg.id}
-                  onClick={() => jumpToSegment(idx)}
-                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-all border-l-2
-                    ${isActive
-                      ? 'bg-white/8 text-white border-red-400'
-                      : 'text-white/35 hover:text-white/60 hover:bg-white/3 border-transparent'
-                    }`}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <StatusDot status={segStatus} />
-                    <span className="block truncate flex-1">{seg.name}</span>
+            <div className="flex-1 overflow-y-auto pb-2">
+              {segments.map((seg, idx) => {
+                const isActive = idx === activeSegmentIdx
+                const segStatus = seg.status || 'proposed'
+                const isExpanded = expandedSegments.has(seg.id)
+                return (
+                  <div key={seg.id}>
+                    {/* Segment header */}
+                    <div
+                      className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-all border-l-2 flex items-center gap-1
+                        ${isActive
+                          ? 'bg-white/8 text-white border-red-400'
+                          : 'text-white/35 hover:text-white/60 hover:bg-white/3 border-transparent'
+                        }`}
+                    >
+                      {/* Expand/collapse chevron */}
+                      <button
+                        onClick={() => toggleSegmentExpanded(seg.id)}
+                        className="p-0.5 rounded hover:bg-white/10 transition-colors flex-shrink-0"
+                      >
+                        {isExpanded
+                          ? <ChevronDown size={10} className="text-white/30" />
+                          : <ChevronRight size={10} className="text-white/30" />
+                        }
+                      </button>
+                      <button
+                        onClick={() => jumpToSegment(idx)}
+                        className="flex-1 text-left min-w-0"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <StatusDot status={segStatus} />
+                          <span className="block truncate flex-1">{seg.name}</span>
+                        </div>
+                        <span className="text-[10px] text-white/20 mt-0.5 block pl-4">
+                          {seg.slides.length} slide{seg.slides.length !== 1 ? 's' : ''}
+                        </span>
+                      </button>
+                    </div>
+                    {/* Slide sub-items */}
+                    {isExpanded && seg.slides.length > 0 && (
+                      <div className="ml-4 border-l border-white/5">
+                        {seg.slides.map((slide, sIdx) => {
+                          const isActiveSlide = isActive && sIdx === activeSlideIdx
+                          return (
+                            <button
+                              key={sIdx}
+                              onClick={() => jumpToSlide(idx, sIdx)}
+                              className={`w-full text-left pl-4 pr-3 py-1.5 text-[11px] transition-all flex items-center gap-1.5
+                                ${isActiveSlide
+                                  ? 'text-white bg-white/5'
+                                  : 'text-white/25 hover:text-white/50 hover:bg-white/3'
+                                }`}
+                            >
+                              <SlideTypeIcon type={slide.type} />
+                              <span className="truncate">{slide.title}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
-                  <span className="text-[10px] text-white/20 mt-0.5 block pl-4">
-                    {seg.slides.length} slide{seg.slides.length !== 1 ? 's' : ''}
-                  </span>
-                </button>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         )}
 

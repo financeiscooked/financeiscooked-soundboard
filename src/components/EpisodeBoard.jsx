@@ -206,7 +206,7 @@ function ProposedBank({ episodes, onSelectSegment }) {
     const items = []
     for (const ep of allEpisodes) {
       for (const seg of ep.segments) {
-        if (seg.status !== 'final') {
+        if (seg.status !== 'final' && seg.slides.length > 0) {
           items.push({ episode: ep, segment: seg })
         }
       }
@@ -355,17 +355,20 @@ export default function EpisodeBoard() {
     return allSegments // prep mode shows all
   }, [allSegments, viewMode])
 
-  const currentSegment = segments[activeSegmentIdx]
+  // Clamp indices to valid range to prevent crashes on view mode switch
+  const safeSegIdx = Math.min(activeSegmentIdx, Math.max(segments.length - 1, 0))
+  const currentSegment = segments[safeSegIdx]
   const slides = currentSegment?.slides || []
-  const currentSlide = slides[activeSlideIdx]
+  const safeSlideIdx = Math.min(activeSlideIdx, Math.max(slides.length - 1, 0))
+  const currentSlide = slides[safeSlideIdx]
 
   // Total slide count and current global position
   const totalSlides = segments.reduce((sum, seg) => sum + seg.slides.length, 0)
   let globalSlideIdx = 0
-  for (let i = 0; i < activeSegmentIdx; i++) {
+  for (let i = 0; i < safeSegIdx; i++) {
     globalSlideIdx += segments[i].slides.length
   }
-  globalSlideIdx += activeSlideIdx
+  globalSlideIdx += safeSlideIdx
 
   // Stats for the current episode
   const finalCount = allSegments.filter((s) => s.status === 'final').length

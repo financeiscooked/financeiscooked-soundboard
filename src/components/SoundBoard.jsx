@@ -159,11 +159,11 @@ export default function SoundBoard() {
         {/* Divider */}
         {extraSlots.length > 0 && (
           <div className="w-full max-w-4xl flex items-center gap-4">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-white/20 text-xs font-bold tracking-widest uppercase">
+            <div className="flex-1 h-px bg-[var(--divider-px)]" />
+            <span className="text-[var(--text-hint)] text-xs font-bold tracking-widest uppercase">
               Movies & Classics
             </span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-[var(--divider-px)]" />
           </div>
         )}
 
@@ -183,8 +183,8 @@ export default function SoundBoard() {
       </div>
 
       {/* Footer hint */}
-      <footer className="px-6 py-2 border-t border-white/5 text-center">
-        <p className="text-white/15 text-xs">
+      <footer className="px-6 py-2 border-t border-[var(--border-subtle)] text-center">
+        <p className="text-[var(--text-faint)] text-xs">
           Hover a button and click the pencil to swap in your own sounds
         </p>
       </footer>

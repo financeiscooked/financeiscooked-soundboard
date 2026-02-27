@@ -15,13 +15,13 @@ export default function MemeViewer({ slot, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 cursor-pointer"
+      className="fixed inset-0 bg-[var(--overlay-heavy)] backdrop-blur-md flex items-center justify-center z-50 cursor-pointer"
       onClick={onClose}
     >
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition-colors"
+        className="absolute top-4 right-4 p-2 rounded-xl bg-[var(--bg-hover)] hover:bg-[var(--bg-active)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
       >
         <X size={24} />
       </button>
@@ -51,7 +51,7 @@ export default function MemeViewer({ slot, onClose }) {
       </div>
 
       {/* Hint */}
-      <p className="absolute bottom-4 text-white/20 text-xs">
+      <p className="absolute bottom-4 text-[var(--text-hint)] text-xs">
         Click anywhere or press Escape to close
       </p>
     </div>

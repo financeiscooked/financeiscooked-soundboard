@@ -34,7 +34,7 @@ function SlideRenderer({ slide }) {
           {images.map((img, i) => (
             <div
               key={i}
-              className="rounded-xl overflow-hidden border border-white/10 shadow-lg bg-black/20"
+              className="rounded-xl overflow-hidden border border-[var(--border-default)] shadow-lg bg-[var(--img-border-bg)]"
             >
               <img
                 src={img.src}
@@ -46,7 +46,7 @@ function SlideRenderer({ slide }) {
           ))}
         </div>
         {slide.notes && (
-          <p className="text-white/40 text-sm max-w-xl text-center">{slide.notes}</p>
+          <p className="text-[var(--text-tertiary)] text-sm max-w-xl text-center">{slide.notes}</p>
         )}
       </div>
     )
@@ -55,7 +55,7 @@ function SlideRenderer({ slide }) {
   if (slide.type === 'image') {
     return (
       <div className="flex flex-col items-center gap-4 w-full">
-        <div className="max-h-[60vh] rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+        <div className="max-h-[60vh] rounded-xl overflow-hidden border border-[var(--border-default)] shadow-2xl">
           <img
             src={slide.src}
             alt={slide.title}
@@ -64,7 +64,7 @@ function SlideRenderer({ slide }) {
           />
         </div>
         {slide.notes && (
-          <p className="text-white/40 text-sm max-w-xl text-center">{slide.notes}</p>
+          <p className="text-[var(--text-tertiary)] text-sm max-w-xl text-center">{slide.notes}</p>
         )}
       </div>
     )
@@ -73,11 +73,11 @@ function SlideRenderer({ slide }) {
   if (slide.type === 'link') {
     return (
       <div className="max-w-2xl w-full">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div className="bg-[var(--bg-subtle)] border border-[var(--border-default)] rounded-2xl p-8">
           <div className="flex items-start gap-3 mb-4">
             <LinkIcon size={20} className="text-blue-400 mt-1 flex-shrink-0" />
             <div>
-              <h3 className="text-white text-xl font-bold leading-tight">{slide.title}</h3>
+              <h3 className="text-[var(--text-primary)] text-xl font-bold leading-tight">{slide.title}</h3>
               <a
                 href={slide.url}
                 target="_blank"
@@ -89,7 +89,7 @@ function SlideRenderer({ slide }) {
             </div>
           </div>
           {slide.notes && (
-            <p className="text-white/60 text-base leading-relaxed mt-4 pl-8">
+            <p className="text-[var(--text-secondary)] text-base leading-relaxed mt-4 pl-8">
               {slide.notes}
             </p>
           )}
@@ -101,19 +101,19 @@ function SlideRenderer({ slide }) {
   if (slide.type === 'text') {
     return (
       <div className="max-w-2xl w-full">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div className="bg-[var(--bg-subtle)] border border-[var(--border-default)] rounded-2xl p-8">
           {slide.bullets && (
             <ul className="space-y-3">
               {slide.bullets.map((bullet, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="text-red-400 mt-1.5 text-xs">&#9679;</span>
-                  <span className="text-white/80 text-lg leading-relaxed">{bullet}</span>
+                  <span className="text-[var(--text-secondary)] text-lg leading-relaxed">{bullet}</span>
                 </li>
               ))}
             </ul>
           )}
           {slide.notes && (
-            <p className="text-white/40 text-sm mt-6">{slide.notes}</p>
+            <p className="text-[var(--text-tertiary)] text-sm mt-6">{slide.notes}</p>
           )}
         </div>
       </div>
@@ -127,7 +127,7 @@ function SlideTypeIcon({ type }) {
   if (type === 'gallery') return <ImageIcon size={9} className="text-pink-400/60 flex-shrink-0" />
   if (type === 'image') return <ImageIcon size={9} className="text-purple-400/60 flex-shrink-0" />
   if (type === 'link') return <LinkIcon size={9} className="text-blue-400/60 flex-shrink-0" />
-  return <FileText size={9} className="text-white/30 flex-shrink-0" />
+  return <FileText size={9} className="text-[var(--text-muted)] flex-shrink-0" />
 }
 
 function StatusDot({ status }) {
@@ -186,7 +186,7 @@ function ProposedBank({ episodes, onSelectSegment }) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-white/30">
+      <div className="flex-1 flex items-center justify-center text-[var(--text-muted)]">
         Loading proposed segments...
       </div>
     )
@@ -194,10 +194,10 @@ function ProposedBank({ episodes, onSelectSegment }) {
 
   if (proposedSegments.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-white/30 gap-3">
-        <Archive size={40} className="text-white/15" />
+      <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] gap-3">
+        <Archive size={40} className="text-[var(--text-faint)]" />
         <p className="text-sm">No proposed segments across any episode</p>
-        <p className="text-xs text-white/20">Segments added by agents will appear here as "proposed"</p>
+        <p className="text-xs text-[var(--text-hint)]">Segments added by agents will appear here as "proposed"</p>
       </div>
     )
   }
@@ -207,8 +207,8 @@ function ProposedBank({ episodes, onSelectSegment }) {
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
           <Circle size={12} className="text-yellow-400" />
-          <h2 className="text-white font-bold text-lg">Proposed Bank</h2>
-          <span className="text-white/30 text-sm">
+          <h2 className="text-[var(--text-primary)] font-bold text-lg">Proposed Bank</h2>
+          <span className="text-[var(--text-muted)] text-sm">
             {proposedSegments.length} segment{proposedSegments.length !== 1 ? 's' : ''} across all episodes
           </span>
         </div>
@@ -217,24 +217,24 @@ function ProposedBank({ episodes, onSelectSegment }) {
             <button
               key={`${episode.id}-${segment.id}`}
               onClick={() => onSelectSegment(episode.id, segment.id)}
-              className="w-full text-left bg-white/5 border border-yellow-500/10 hover:border-yellow-500/25 rounded-xl p-4 transition-all hover:bg-white/8 group"
+              className="w-full text-left bg-[var(--bg-subtle)] border border-yellow-500/10 hover:border-yellow-500/25 rounded-xl p-4 transition-all hover:bg-[var(--bg-active)] group"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <StatusDot status="proposed" />
-                  <span className="text-white font-bold text-sm">{segment.name}</span>
+                  <span className="text-[var(--text-primary)] font-bold text-sm">{segment.name}</span>
                 </div>
-                <span className="text-white/20 text-xs font-mono bg-white/5 px-2 py-0.5 rounded">
+                <span className="text-[var(--text-hint)] text-xs font-mono bg-[var(--bg-subtle)] px-2 py-0.5 rounded">
                   {episode.title}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-white/30 text-xs">
+              <div className="flex items-center gap-4 text-[var(--text-muted)] text-xs">
                 <span>{segment.slides.length} slide{segment.slides.length !== 1 ? 's' : ''}</span>
                 <span>&#183;</span>
                 <span>{segment.slides.map((s) => s.type).filter((v, i, a) => a.indexOf(v) === i).join(', ')}</span>
               </div>
               {segment.slides.length > 0 && (
-                <div className="mt-2 text-white/20 text-xs truncate">
+                <div className="mt-2 text-[var(--text-hint)] text-xs truncate">
                   First slide: {segment.slides[0].title}
                 </div>
               )}
@@ -394,7 +394,7 @@ export default function EpisodeBoard() {
 
   if (!episode) {
     return (
-      <div className="flex-1 flex items-center justify-center text-white/30">
+      <div className="flex-1 flex items-center justify-center text-[var(--text-muted)]">
         Loading episode...
       </div>
     )
@@ -405,18 +405,18 @@ export default function EpisodeBoard() {
   return (
     <div className="flex-1 flex overflow-hidden">
       {/* Left sidebar — segments */}
-      <div className="w-56 flex-shrink-0 border-r border-white/5 flex flex-col">
+      <div className="w-56 flex-shrink-0 border-r border-[var(--border-subtle)] flex flex-col">
         {/* Episode picker */}
-        <div className="p-3 border-b border-white/5 relative">
+        <div className="p-3 border-b border-[var(--border-subtle)] relative">
           <button
             onClick={() => setEpDropdownOpen(!epDropdownOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-bold tracking-wider transition-colors"
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] text-xs font-bold tracking-wider transition-colors"
           >
             <span className="truncate">{currentEp?.title || 'Select Episode'}</span>
-            <ChevronDown size={14} className="text-white/40 flex-shrink-0" />
+            <ChevronDown size={14} className="text-[var(--text-tertiary)] flex-shrink-0" />
           </button>
           {epDropdownOpen && (
-            <div className="absolute top-full left-3 right-3 mt-1 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-2xl z-20 overflow-hidden">
+            <div className="absolute top-full left-3 right-3 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 overflow-hidden">
               {episodes.map((ep) => (
                 <button
                   key={ep.id}
@@ -425,7 +425,7 @@ export default function EpisodeBoard() {
                     setEpDropdownOpen(false)
                   }}
                   className={`w-full text-left px-3 py-2 text-xs font-semibold transition-colors
-                    ${ep.id === currentEpId ? 'bg-white/10 text-white' : 'text-white/50 hover:bg-white/5 hover:text-white'}`}
+                    ${ep.id === currentEpId ? 'bg-[var(--bg-hover)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]'}`}
                 >
                   {ep.title}
                 </button>
@@ -435,8 +435,8 @@ export default function EpisodeBoard() {
         </div>
 
         {/* View mode toggle */}
-        <div className="p-2 border-b border-white/5">
-          <div className="flex items-center gap-0.5 bg-white/5 rounded-lg p-0.5">
+        <div className="p-2 border-b border-[var(--border-subtle)]">
+          <div className="flex items-center gap-0.5 bg-[var(--bg-subtle)] rounded-lg p-0.5">
             {VIEW_MODES.map((mode) => (
               <button
                 key={mode.id}
@@ -444,8 +444,8 @@ export default function EpisodeBoard() {
                 title={mode.description}
                 className={`flex-1 px-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all
                   ${viewMode === mode.id
-                    ? 'bg-white/10 text-white shadow'
-                    : 'text-white/30 hover:text-white/50'
+                    ? 'bg-[var(--bg-hover)] text-[var(--text-primary)] shadow'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                   }`}
               >
                 {mode.label}
@@ -457,12 +457,12 @@ export default function EpisodeBoard() {
             <div className="flex items-center gap-3 mt-2 px-1">
               <div className="flex items-center gap-1">
                 <CheckCircle2 size={9} className="text-emerald-400" />
-                <span className="text-[10px] text-white/30">{finalCount} final</span>
+                <span className="text-[10px] text-[var(--text-muted)]">{finalCount} final</span>
               </div>
               {proposedCount > 0 && (
                 <div className="flex items-center gap-1">
                   <Circle size={9} className="text-yellow-400" />
-                  <span className="text-[10px] text-white/30">{proposedCount} proposed</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{proposedCount} proposed</span>
                 </div>
               )}
             </div>
@@ -478,7 +478,7 @@ export default function EpisodeBoard() {
                 <button
                   onClick={expandAll}
                   title="Expand all"
-                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-[var(--text-hint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] transition-colors"
                 >
                   <ChevronsUpDown size={10} />
                   Expand
@@ -486,7 +486,7 @@ export default function EpisodeBoard() {
                 <button
                   onClick={collapseAll}
                   title="Collapse all"
-                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-white/25 hover:text-white/50 hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-[var(--text-hint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] transition-colors"
                 >
                   <ChevronsDownUp size={10} />
                   Collapse
@@ -494,7 +494,7 @@ export default function EpisodeBoard() {
               </div>
             )}
             {segments.length === 0 && (
-              <div className="px-4 py-8 text-center text-white/20 text-xs">
+              <div className="px-4 py-8 text-center text-[var(--text-hint)] text-xs">
                 {viewMode === 'show' ? 'No final segments yet' : 'No segments'}
               </div>
             )}
@@ -509,18 +509,18 @@ export default function EpisodeBoard() {
                     <div
                       className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-all border-l-2 flex items-center gap-1
                         ${isActive
-                          ? 'bg-white/8 text-white border-red-400'
-                          : 'text-white/35 hover:text-white/60 hover:bg-white/3 border-transparent'
+                          ? 'bg-[var(--bg-active)] text-[var(--text-primary)] border-red-400'
+                          : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] border-transparent'
                         }`}
                     >
                       {/* Expand/collapse chevron */}
                       <button
                         onClick={() => toggleSegmentExpanded(seg.id)}
-                        className="p-0.5 rounded hover:bg-white/10 transition-colors flex-shrink-0"
+                        className="p-0.5 rounded hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
                       >
                         {isExpanded
-                          ? <ChevronDown size={10} className="text-white/30" />
-                          : <ChevronRight size={10} className="text-white/30" />
+                          ? <ChevronDown size={10} className="text-[var(--text-muted)]" />
+                          : <ChevronRight size={10} className="text-[var(--text-muted)]" />
                         }
                       </button>
                       <button
@@ -531,14 +531,14 @@ export default function EpisodeBoard() {
                           <StatusDot status={segStatus} />
                           <span className="block truncate flex-1">{seg.name}</span>
                         </div>
-                        <span className="text-[10px] text-white/20 mt-0.5 block pl-4">
+                        <span className="text-[10px] text-[var(--text-hint)] mt-0.5 block pl-4">
                           {seg.slides.length} slide{seg.slides.length !== 1 ? 's' : ''}
                         </span>
                       </button>
                     </div>
                     {/* Slide sub-items */}
                     {isExpanded && seg.slides.length > 0 && (
-                      <div className="ml-4 border-l border-white/5">
+                      <div className="ml-4 border-l border-[var(--border-subtle)]">
                         {seg.slides.map((slide, sIdx) => {
                           const isActiveSlide = isActive && sIdx === activeSlideIdx
                           return (
@@ -547,8 +547,8 @@ export default function EpisodeBoard() {
                               onClick={() => jumpToSlide(idx, sIdx)}
                               className={`w-full text-left pl-4 pr-3 py-1.5 text-[11px] transition-all flex items-center gap-1.5
                                 ${isActiveSlide
-                                  ? 'text-white bg-white/5'
-                                  : 'text-white/25 hover:text-white/50 hover:bg-white/3'
+                                  ? 'text-[var(--text-primary)] bg-[var(--bg-subtle)]'
+                                  : 'text-[var(--text-hint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
                                 }`}
                             >
                               <SlideTypeIcon type={slide.type} />
@@ -569,7 +569,7 @@ export default function EpisodeBoard() {
         {viewMode === 'bank' && (
           <div className="flex-1 flex flex-col items-center justify-center px-4 text-center">
             <Archive size={24} className="text-yellow-400/40 mb-2" />
-            <p className="text-white/30 text-xs">
+            <p className="text-[var(--text-muted)] text-xs">
               Browsing proposed segments across all episodes
             </p>
           </div>
@@ -582,7 +582,7 @@ export default function EpisodeBoard() {
       ) : (
         <div className="flex-1 flex flex-col">
           {/* Slide header */}
-          <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between">
+          <div className="px-6 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
                 <div className="flex items-center gap-2">
@@ -591,12 +591,12 @@ export default function EpisodeBoard() {
                   </span>
                   {currentSegment && <StatusBadge status={currentSegment.status || 'proposed'} />}
                 </div>
-                <h2 className="text-white font-bold text-lg mt-0.5">
+                <h2 className="text-[var(--text-primary)] font-bold text-lg mt-0.5">
                   {currentSlide?.title}
                 </h2>
               </div>
             </div>
-            <span className="text-white/20 text-xs font-mono">
+            <span className="text-[var(--text-hint)] text-xs font-mono">
               {totalSlides > 0 ? `${globalSlideIdx + 1} / ${totalSlides}` : '0 / 0'}
             </span>
           </div>
@@ -606,19 +606,19 @@ export default function EpisodeBoard() {
             {currentSlide ? (
               <SlideRenderer slide={currentSlide} />
             ) : (
-              <div className="text-white/20 text-sm">
+              <div className="text-[var(--text-hint)] text-sm">
                 {segments.length === 0 ? 'No segments to display in this view' : 'No slides in this segment'}
               </div>
             )}
           </div>
 
           {/* Navigation */}
-          <div className="px-6 py-3 border-t border-white/5 flex items-center justify-between">
+          <div className="px-6 py-3 border-t border-[var(--border-subtle)] flex items-center justify-between">
             <button
               onClick={goPrev}
               disabled={globalSlideIdx === 0 || totalSlides === 0}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold
-                         bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all
+                         bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all
                          disabled:opacity-20 disabled:cursor-not-allowed"
             >
               <ChevronLeft size={16} />
@@ -632,7 +632,7 @@ export default function EpisodeBoard() {
                   key={i}
                   onClick={() => setActiveSlideIdx(i)}
                   className={`w-2 h-2 rounded-full transition-all
-                    ${i === activeSlideIdx ? 'bg-red-400 w-4' : 'bg-white/15 hover:bg-white/30'}`}
+                    ${i === activeSlideIdx ? 'bg-red-400 w-4' : 'bg-[var(--text-faint)] hover:bg-[var(--text-muted)]'}`}
                 />
               ))}
             </div>
@@ -641,7 +641,7 @@ export default function EpisodeBoard() {
               onClick={goNext}
               disabled={globalSlideIdx === totalSlides - 1 || totalSlides === 0}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold
-                         bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all
+                         bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all
                          disabled:opacity-20 disabled:cursor-not-allowed"
             >
               Next

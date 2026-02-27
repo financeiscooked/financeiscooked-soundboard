@@ -36,7 +36,7 @@ export default function MemeButton({ slot, onShow, onEdit }) {
       <div className="edit-overlay z-10">
         <button
           onClick={handleEdit}
-          className="p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white/60 hover:text-white transition-colors"
+          className="p-1.5 rounded-lg bg-[var(--btn-edit-bg)] hover:bg-[var(--btn-edit-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <Pencil size={14} />
         </button>
@@ -44,7 +44,7 @@ export default function MemeButton({ slot, onShow, onEdit }) {
 
       {/* Thumbnail preview */}
       {hasImage && (
-        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
+        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-[var(--border-default)]">
           <img
             src={slot.customImageUrl || slot.placeholder}
             alt={slot.name}

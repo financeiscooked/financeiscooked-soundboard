@@ -163,8 +163,8 @@ export default function MemeBoard() {
       </div>
 
       {/* Footer hint */}
-      <footer className="px-6 py-2 border-t border-white/5 text-center">
-        <p className="text-white/15 text-xs">
+      <footer className="px-6 py-2 border-t border-[var(--border-subtle)] text-center">
+        <p className="text-[var(--text-faint)] text-xs">
           Hover a button and click the pencil to upload your own memes
         </p>
       </footer>

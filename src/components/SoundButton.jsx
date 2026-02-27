@@ -87,7 +87,7 @@ export default function SoundButton({ slot, onEdit, stopAllSignal }) {
       <div className="edit-overlay z-10">
         <button
           onClick={handleEdit}
-          className="p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white/60 hover:text-white transition-colors"
+          className="p-1.5 rounded-lg bg-[var(--btn-edit-bg)] hover:bg-[var(--btn-edit-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <Pencil size={14} />
         </button>

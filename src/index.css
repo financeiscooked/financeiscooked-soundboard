@@ -2,14 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-dark: #0a0a0f;
-  --bg-card: #12121a;
+/* Theme variables */
+:root,
+[data-theme="dark"] {
+  --bg-primary: #0a0a0f;
+  --bg-surface: #1a1a2e;
+  --bg-subtle: rgba(255,255,255,0.05);
+  --bg-hover: rgba(255,255,255,0.1);
+  --bg-active: rgba(255,255,255,0.08);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.5);
+  --text-tertiary: rgba(255,255,255,0.35);
+  --text-muted: rgba(255,255,255,0.3);
+  --text-hint: rgba(255,255,255,0.2);
+  --text-faint: rgba(255,255,255,0.15);
+  --border-default: rgba(255,255,255,0.1);
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-strong: rgba(255,255,255,0.15);
+  --border-hover: rgba(255,255,255,0.2);
+  --border-heavy: rgba(255,255,255,0.3);
+  --input-bg: rgba(0,0,0,0.4);
+  --overlay-bg: rgba(0,0,0,0.7);
+  --overlay-heavy: rgba(0,0,0,0.85);
+  --btn-edit-bg: rgba(0,0,0,0.6);
+  --btn-edit-hover: rgba(0,0,0,0.8);
+  --img-border-bg: rgba(0,0,0,0.2);
+  --sound-btn-border: rgba(255,255,255,0.08);
+  --sound-btn-hover-border: rgba(255,255,255,0.2);
+  --sound-btn-hover-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  --divider-px: rgba(255,255,255,0.1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-subtle: rgba(0,0,0,0.04);
+  --bg-hover: rgba(0,0,0,0.07);
+  --bg-active: rgba(0,0,0,0.05);
+  --text-primary: #1a1b2e;
+  --text-secondary: rgba(0,0,0,0.55);
+  --text-tertiary: rgba(0,0,0,0.4);
+  --text-muted: rgba(0,0,0,0.3);
+  --text-hint: rgba(0,0,0,0.2);
+  --text-faint: rgba(0,0,0,0.12);
+  --border-default: rgba(0,0,0,0.1);
+  --border-subtle: rgba(0,0,0,0.06);
+  --border-strong: rgba(0,0,0,0.12);
+  --border-hover: rgba(0,0,0,0.2);
+  --border-heavy: rgba(0,0,0,0.25);
+  --input-bg: rgba(0,0,0,0.05);
+  --overlay-bg: rgba(0,0,0,0.5);
+  --overlay-heavy: rgba(0,0,0,0.7);
+  --btn-edit-bg: rgba(255,255,255,0.85);
+  --btn-edit-hover: rgba(255,255,255,1);
+  --img-border-bg: rgba(0,0,0,0.05);
+  --sound-btn-border: rgba(0,0,0,0.1);
+  --sound-btn-hover-border: rgba(0,0,0,0.2);
+  --sound-btn-hover-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  --divider-px: rgba(0,0,0,0.1);
 }
 
 body {
   margin: 0;
-  background: var(--bg-dark);
+  background: var(--bg-primary);
   font-family: 'Inter', sans-serif;
   height: 100vh;
 }
@@ -50,14 +105,14 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
-  border: 2px solid rgba(255,255,255,0.08);
+  border: 2px solid var(--sound-btn-border);
   overflow: hidden;
 }
 
 .sound-btn:hover {
-  border-color: rgba(255,255,255,0.2);
+  border-color: var(--sound-btn-hover-border);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  box-shadow: var(--sound-btn-hover-shadow);
 }
 
 .sound-btn:active {

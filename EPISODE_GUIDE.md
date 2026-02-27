@@ -95,9 +95,27 @@ The **Proposed Bank** is important: hosts may see a proposed segment from EP1 an
 
 ### Slide Types
 
-There are exactly **3 slide types**:
+There are **4 slide types**:
 
-#### 1. `image` — Displays an image
+#### 1. `gallery` — Displays multiple images in a grid
+```json
+{
+  "type": "gallery",
+  "title": "Slide title shown as heading",
+  "images": [
+    { "src": "/episodes/ep{N}/image1.png", "alt": "Description" },
+    { "src": "/episodes/ep{N}/image2.png", "alt": "Description" },
+    { "src": "/episodes/ep{N}/image3.png", "alt": "Description" }
+  ],
+  "notes": "Optional speaker notes"
+}
+```
+- `images` is an array of objects, each with `src` and optional `alt`
+- 4+ images render in a 2-column grid, fewer render in a single row
+- Use this when you want to show multiple related images on one slide
+- All image `src` paths follow the same rules as the `image` type
+
+#### 2. `image` — Displays a single image
 ```json
 {
   "type": "image",
@@ -110,7 +128,7 @@ There are exactly **3 slide types**:
 - The actual image file MUST exist at `public/episodes/ep{N}/filename.ext`
 - Supported formats: .png, .jpg, .jpeg, .gif, .webp
 
-#### 2. `text` — Displays bullet points
+#### 3. `text` — Displays bullet points
 ```json
 {
   "type": "text",
@@ -127,7 +145,7 @@ There are exactly **3 slide types**:
 - Keep bullets concise — these are displayed on screen during a live show
 - 3-6 bullets per slide is ideal
 
-#### 3. `link` — Displays an article/URL card
+#### 4. `link` — Displays an article/URL card
 ```json
 {
   "type": "link",

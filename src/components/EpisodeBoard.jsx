@@ -21,6 +21,37 @@ const VIEW_MODES = [
 ]
 
 function SlideRenderer({ slide }) {
+  if (slide.type === 'gallery') {
+    const images = slide.images || []
+    // Auto-pick grid: 2 cols for 4+, otherwise fit in a row
+    const cols = images.length >= 4 ? 2 : images.length
+    return (
+      <div className="flex flex-col items-center gap-4 w-full max-w-4xl">
+        <div
+          className="grid gap-3 w-full"
+          style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+        >
+          {images.map((img, i) => (
+            <div
+              key={i}
+              className="rounded-xl overflow-hidden border border-white/10 shadow-lg bg-black/20"
+            >
+              <img
+                src={img.src}
+                alt={img.alt || slide.title}
+                className="w-full h-full object-contain max-h-[35vh]"
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
+        {slide.notes && (
+          <p className="text-white/40 text-sm max-w-xl text-center">{slide.notes}</p>
+        )}
+      </div>
+    )
+  }
+
   if (slide.type === 'image') {
     return (
       <div className="flex flex-col items-center gap-4 w-full">
@@ -93,6 +124,7 @@ function SlideRenderer({ slide }) {
 }
 
 function SlideTypeIcon({ type }) {
+  if (type === 'gallery') return <ImageIcon size={9} className="text-pink-400/60 flex-shrink-0" />
   if (type === 'image') return <ImageIcon size={9} className="text-purple-400/60 flex-shrink-0" />
   if (type === 'link') return <LinkIcon size={9} className="text-blue-400/60 flex-shrink-0" />
   return <FileText size={9} className="text-white/30 flex-shrink-0" />

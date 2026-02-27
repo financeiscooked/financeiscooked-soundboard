@@ -9,19 +9,23 @@
       "status": "final",
       "slides": [
         {
-          "type": "image",
+          "type": "gallery",
           "title": "Finance Is Cooked!",
-          "src": "/episodes/ep1/logo-tagline.png"
+          "images": [
+            { "src": "/episodes/ep1/logo-tagline.png", "alt": "Finance Is Cooked tagline" },
+            { "src": "/episodes/ep1/logo-chefs.png", "alt": "Let's make sure you're one of the chefs" },
+            { "src": "/episodes/ep1/logo-cooking.png", "alt": "Cooking it up" },
+            { "src": "/episodes/ep1/logo-steaks-labeled.png", "alt": "Steaks are high" }
+          ]
         },
         {
-          "type": "image",
-          "title": "...let's make sure you're one of the chefs",
-          "src": "/episodes/ep1/logo-chefs.png"
-        },
-        {
-          "type": "image",
-          "title": "Let's make sure you're a chef",
-          "src": "/episodes/ep1/logo-cooking.png"
+          "type": "gallery",
+          "title": "The Vibe",
+          "images": [
+            { "src": "/episodes/ep1/logo-chaos-1.png", "alt": "Chaos in the kitchen" },
+            { "src": "/episodes/ep1/logo-chaos-2.png", "alt": "More chaos" },
+            { "src": "/episodes/ep1/logo-serving.png", "alt": "Serving it up" }
+          ]
         },
         {
           "type": "text",
@@ -187,13 +191,8 @@
       "status": "final",
       "slides": [
         {
-          "type": "image",
-          "title": "Thanks for Watching!",
-          "src": "/episodes/ep1/logo-serving.png"
-        },
-        {
           "type": "text",
-          "title": "See You Next Week!",
+          "title": "Thanks for Watching! See You Next Week!",
           "bullets": [
             "Subscribe & follow",
             "ficsoundboard.netlify.app",

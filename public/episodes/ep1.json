@@ -9,6 +9,12 @@
       "status": "final",
       "slides": [
         {
+          "type": "link",
+          "title": "Intro Music",
+          "url": "https://suno.com/song/27bcaf6f-c0b2-410b-b510-2128ee6bb58e?sh=rVe1TBhVU9S78hfc",
+          "notes": "Play intro music locally while this slide is up"
+        },
+        {
           "type": "gallery",
           "title": "Finance Is Cooked!",
           "images": [

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,6 +12,9 @@ import {
   Archive,
   ChevronsUpDown,
   ChevronsDownUp,
+  Play,
+  Pause,
+  RotateCcw,
 } from 'lucide-react'
 
 const VIEW_MODES = [
@@ -255,6 +258,45 @@ export default function EpisodeBoard() {
   const [epDropdownOpen, setEpDropdownOpen] = useState(false)
   const [viewMode, setViewMode] = useState('show')
   const [expandedSegments, setExpandedSegments] = useState(new Set())
+
+  // Show timer
+  const [timerRunning, setTimerRunning] = useState(false)
+  const [elapsedMs, setElapsedMs] = useState(0)
+  const timerStart = useRef(null)
+  const timerInterval = useRef(null)
+
+  useEffect(() => {
+    if (timerRunning) {
+      timerStart.current = Date.now() - elapsedMs
+      timerInterval.current = setInterval(() => {
+        setElapsedMs(Date.now() - timerStart.current)
+      }, 100)
+    } else if (timerInterval.current) {
+      clearInterval(timerInterval.current)
+      timerInterval.current = null
+    }
+    return () => {
+      if (timerInterval.current) clearInterval(timerInterval.current)
+    }
+  }, [timerRunning])
+
+  const toggleTimer = useCallback(() => {
+    setTimerRunning((r) => !r)
+  }, [])
+
+  const resetTimer = useCallback(() => {
+    setTimerRunning(false)
+    setElapsedMs(0)
+  }, [])
+
+  const formatTimer = (ms) => {
+    const totalSec = Math.floor(ms / 1000)
+    const h = Math.floor(totalSec / 3600)
+    const m = Math.floor((totalSec % 3600) / 60)
+    const s = totalSec % 60
+    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
 
   // Load episode list
   useEffect(() => {
@@ -596,9 +638,38 @@ export default function EpisodeBoard() {
                 </h2>
               </div>
             </div>
-            <span className="text-[var(--text-hint)] text-xs font-mono">
-              {totalSlides > 0 ? `${globalSlideIdx + 1} / ${totalSlides}` : '0 / 0'}
-            </span>
+            <div className="flex items-center gap-4">
+              <span className="text-[var(--text-hint)] text-xs font-mono">
+                {totalSlides > 0 ? `${globalSlideIdx + 1} / ${totalSlides}` : '0 / 0'}
+              </span>
+
+              {/* Show Timer */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={toggleTimer}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-mono font-bold transition-all
+                    ${timerRunning
+                      ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
+                      : elapsedMs > 0
+                        ? 'bg-yellow-500/15 text-yellow-400 hover:bg-yellow-500/25'
+                        : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                    }`}
+                  title={timerRunning ? 'Pause timer' : 'Start timer'}
+                >
+                  {timerRunning ? <Pause size={12} /> : <Play size={12} />}
+                  {formatTimer(elapsedMs)}
+                </button>
+                {elapsedMs > 0 && (
+                  <button
+                    onClick={resetTimer}
+                    className="p-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
+                    title="Reset timer"
+                  >
+                    <RotateCcw size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Slide content */}

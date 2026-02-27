@@ -644,10 +644,10 @@ export default function EpisodeBoard() {
               </span>
 
               {/* Show Timer */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={toggleTimer}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-mono font-bold transition-all
+                  className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-3xl font-mono font-bold transition-all
                     ${timerRunning
                       ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
                       : elapsedMs > 0
@@ -656,16 +656,16 @@ export default function EpisodeBoard() {
                     }`}
                   title={timerRunning ? 'Pause timer' : 'Start timer'}
                 >
-                  {timerRunning ? <Pause size={12} /> : <Play size={12} />}
+                  {timerRunning ? <Pause size={28} /> : <Play size={28} />}
                   {formatTimer(elapsedMs)}
                 </button>
                 {elapsedMs > 0 && (
                   <button
                     onClick={resetTimer}
-                    className="p-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
+                    className="p-2.5 rounded-xl bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
                     title="Reset timer"
                   >
-                    <RotateCcw size={12} />
+                    <RotateCcw size={24} />
                   </button>
                 )}
               </div>

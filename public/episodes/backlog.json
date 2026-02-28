@@ -25,7 +25,15 @@
       "id": "take-of-the-show",
       "name": "Take of the Show",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "link",
+          "title": "The Death of Apps & Rise of the Meta-App",
+          "url": "https://www.linkedin.com/pulse/we-all-digital-gods-death-apps-rise-meta-app-zach-lloyd-rejlc/",
+          "notes": "Zach Lloyd argues meta-apps like Claude Code, Codex, and Warp bypass traditional apps entirely — you start with what you want to accomplish and the meta-app goes right to the solution. MCP, CLIs, and APIs are just a stopgap because data is siloed across legacy apps. Connects to Ore's EP1 take 'The UI is Dead' — this extends the thesis from UI dying to entire apps being replaced.",
+          "status": "proposed"
+        }
+      ]
     },
     {
       "id": "one-thing-ai",

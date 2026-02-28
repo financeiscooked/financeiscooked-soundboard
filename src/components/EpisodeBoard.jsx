@@ -182,8 +182,8 @@ function StatusBadge({ status }) {
   )
 }
 
-// Proposed Bank — shows all proposed segments across all episodes
-function ProposedBank({ episodes, onSelectSegment }) {
+// Proposed Bank — shows all proposed slides across all episodes, grouped by segment
+function ProposedBank({ episodes, onSelectSlide }) {
   const [allEpisodes, setAllEpisodes] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -202,17 +202,20 @@ function ProposedBank({ episodes, onSelectSegment }) {
     })
   }, [episodes])
 
-  const proposedSegments = useMemo(() => {
-    const items = []
+  // Collect all proposed segments that have slides, grouped by episode
+  const proposedGroups = useMemo(() => {
+    const groups = []
     for (const ep of allEpisodes) {
       for (const seg of ep.segments) {
         if (seg.status !== 'final' && seg.slides.length > 0) {
-          items.push({ episode: ep, segment: seg })
+          groups.push({ episode: ep, segment: seg })
         }
       }
     }
-    return items
+    return groups
   }, [allEpisodes])
+
+  const totalSlides = proposedGroups.reduce((sum, g) => sum + g.segment.slides.length, 0)
 
   if (loading) {
     return (
@@ -222,12 +225,12 @@ function ProposedBank({ episodes, onSelectSegment }) {
     )
   }
 
-  if (proposedSegments.length === 0) {
+  if (proposedGroups.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] gap-3">
         <Archive size={40} className="text-[var(--text-faint)]" />
-        <p className="text-sm">No proposed segments across any episode</p>
-        <p className="text-xs text-[var(--text-hint)]">Segments added by agents will appear here as "proposed"</p>
+        <p className="text-sm">No proposed topics across any episode</p>
+        <p className="text-xs text-[var(--text-hint)]">Topics added by agents will appear here as "proposed"</p>
       </div>
     )
   }
@@ -239,36 +242,41 @@ function ProposedBank({ episodes, onSelectSegment }) {
           <Circle size={12} className="text-yellow-400" />
           <h2 className="text-[var(--text-primary)] font-bold text-lg">Proposed Bank</h2>
           <span className="text-[var(--text-muted)] text-sm">
-            {proposedSegments.length} segment{proposedSegments.length !== 1 ? 's' : ''} across all episodes
+            {totalSlides} topic{totalSlides !== 1 ? 's' : ''} across all episodes
           </span>
         </div>
-        <div className="space-y-3">
-          {proposedSegments.map(({ episode, segment }) => (
-            <button
-              key={`${episode.id}-${segment.id}`}
-              onClick={() => onSelectSegment(episode.id, segment.id)}
-              className="w-full text-left bg-[var(--bg-subtle)] border border-yellow-500/10 hover:border-yellow-500/25 rounded-xl p-4 transition-all hover:bg-[var(--bg-active)] group"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <StatusDot status="proposed" />
-                  <span className="text-[var(--text-primary)] font-bold text-sm">{segment.name}</span>
-                </div>
-                <span className="text-[var(--text-hint)] text-xs font-mono bg-[var(--bg-subtle)] px-2 py-0.5 rounded">
-                  {episode.title}
-                </span>
+        <div className="space-y-5">
+          {proposedGroups.map(({ episode, segment }) => (
+            <div key={`${episode.id}-${segment.id}`}>
+              {/* Segment header */}
+              <div className="flex items-center gap-2 mb-2">
+                <StatusDot status="proposed" />
+                <span className="text-[var(--text-secondary)] font-bold text-xs uppercase tracking-wider">{segment.name}</span>
+                <span className="text-[var(--text-hint)] text-[10px]">&#183;</span>
+                <span className="text-[var(--text-hint)] text-[10px] font-mono">{episode.title}</span>
               </div>
-              <div className="flex items-center gap-4 text-[var(--text-muted)] text-xs">
-                <span>{segment.slides.length} slide{segment.slides.length !== 1 ? 's' : ''}</span>
-                <span>&#183;</span>
-                <span>{segment.slides.map((s) => s.type).filter((v, i, a) => a.indexOf(v) === i).join(', ')}</span>
+              {/* Individual slides */}
+              <div className="space-y-2 ml-4">
+                {segment.slides.map((slide, slideIdx) => (
+                  <button
+                    key={slideIdx}
+                    onClick={() => onSelectSlide(episode.id, segment.id, slideIdx)}
+                    className="w-full text-left bg-[var(--bg-subtle)] border border-yellow-500/10 hover:border-yellow-500/25 rounded-xl p-4 transition-all hover:bg-[var(--bg-active)] group"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <SlideTypeIcon type={slide.type} />
+                      <span className="text-[var(--text-primary)] font-bold text-sm">{slide.title}</span>
+                    </div>
+                    {slide.notes && (
+                      <p className="text-[var(--text-muted)] text-xs mt-1 line-clamp-2">{slide.notes}</p>
+                    )}
+                    {slide.url && (
+                      <p className="text-[#4A9FD9]/50 text-[10px] mt-1 truncate">{slide.url}</p>
+                    )}
+                  </button>
+                ))}
               </div>
-              {segment.slides.length > 0 && (
-                <div className="mt-2 text-[var(--text-hint)] text-xs truncate">
-                  First slide: {segment.slides[0].title}
-                </div>
-              )}
-            </button>
+            </div>
           ))}
         </div>
       </div>
@@ -425,21 +433,22 @@ export default function EpisodeBoard() {
   }, [])
 
   // Jump to a specific episode + segment (used by Proposed Bank)
-  const handleBankSelect = useCallback((epId, segId) => {
+  const handleBankSelect = useCallback((epId, segId, slideIdx = 0) => {
     setCurrentEpId(epId)
     setViewMode('prep')
-    // Wait for episode to load, then find the segment
-    const waitForEp = () => {
-      fetch(`/episodes/${epId}.json`)
-        .then((r) => r.json())
-        .then((data) => {
-          setEpisode(data)
-          const idx = data.segments.findIndex((s) => s.id === segId)
-          setActiveSegmentIdx(idx >= 0 ? idx : 0)
-          setActiveSlideIdx(0)
-        })
-    }
-    waitForEp()
+    // Load episode, find the segment, jump to the specific slide
+    fetch(`/episodes/${epId}.json`)
+      .then((r) => r.json())
+      .then((data) => {
+        setEpisode(data)
+        const idx = data.segments.findIndex((s) => s.id === segId)
+        setActiveSegmentIdx(idx >= 0 ? idx : 0)
+        setActiveSlideIdx(slideIdx)
+        // Auto-expand the segment
+        if (data.segments[idx]) {
+          setExpandedSegments((prev) => new Set(prev).add(data.segments[idx].id))
+        }
+      })
   }, [])
 
   // Reset segment index when view mode changes (filtered list may be shorter)
@@ -650,7 +659,7 @@ export default function EpisodeBoard() {
 
       {/* Right area */}
       {viewMode === 'bank' ? (
-        <ProposedBank episodes={episodes} onSelectSegment={handleBankSelect} />
+        <ProposedBank episodes={episodes} onSelectSlide={handleBankSelect} />
       ) : (
         <div className="flex-1 flex flex-col">
           {/* Slide header */}

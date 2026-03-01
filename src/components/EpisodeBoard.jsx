@@ -16,6 +16,8 @@ import {
   Pause,
   RotateCcw,
   Info,
+  Timer,
+  Settings,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -43,8 +45,124 @@ function DetailsExpander({ details }) {
 const VIEW_MODES = [
   { id: 'show', label: 'Show', description: 'Final segments only' },
   { id: 'prep', label: 'Prep', description: 'All segments' },
-  { id: 'bank', label: 'Proposed Bank', description: 'All proposed across episodes' },
+  { id: 'bank', label: 'Bank', description: 'All proposed across episodes' },
+  { id: 'live', label: 'Live', description: 'PTI-style rundown for on-air' },
 ]
+
+// PTI-style Live rundown — just the topic list, no details
+function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, segmentTimerSec, formatTimer: fmt }) {
+  // Per-segment countdown
+  const [segTimerMs, setSegTimerMs] = useState(0)
+  const [segTimerRunning, setSegTimerRunning] = useState(false)
+  const segTimerStart = useRef(null)
+  const segTimerInterval = useRef(null)
+
+  // Reset segment timer when segment changes
+  useEffect(() => {
+    setSegTimerMs(0)
+    setSegTimerRunning(false)
+  }, [activeSegmentIdx])
+
+  useEffect(() => {
+    if (segTimerRunning) {
+      segTimerStart.current = Date.now() - segTimerMs
+      segTimerInterval.current = setInterval(() => {
+        setSegTimerMs(Date.now() - segTimerStart.current)
+      }, 100)
+    } else if (segTimerInterval.current) {
+      clearInterval(segTimerInterval.current)
+      segTimerInterval.current = null
+    }
+    return () => {
+      if (segTimerInterval.current) clearInterval(segTimerInterval.current)
+    }
+  }, [segTimerRunning])
+
+  const remainingMs = Math.max(0, (segmentTimerSec * 1000) - segTimerMs)
+  const isOvertime = segTimerMs > segmentTimerSec * 1000
+  const overtimeMs = segTimerMs - segmentTimerSec * 1000
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Timer bar */}
+      {showTimer && (
+        <div className={`px-6 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between
+          ${isOvertime ? 'bg-red-500/10' : ''}`}
+        >
+          <div className="flex items-center gap-3">
+            <Timer size={16} className={isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-muted)]'} />
+            <span className="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold">
+              Segment Timer
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`font-mono text-2xl font-bold ${isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-primary)]'}`}>
+              {isOvertime ? `+${fmt(overtimeMs)}` : fmt(remainingMs)}
+            </span>
+            <button
+              onClick={() => setSegTimerRunning((r) => !r)}
+              className={`p-1.5 rounded-lg transition-all ${segTimerRunning ? 'bg-red-500/15 text-[#D94E2A]' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+            >
+              {segTimerRunning ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+            <button
+              onClick={() => { setSegTimerMs(0); setSegTimerRunning(false) }}
+              className="p-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all"
+            >
+              <RotateCcw size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Segment list — full width PTI rundown */}
+      <div className="flex-1 overflow-y-auto">
+        {segments.map((seg, idx) => {
+          const isActive = idx === activeSegmentIdx
+          const isPast = idx < activeSegmentIdx
+          const isFuture = idx > activeSegmentIdx
+          return (
+            <button
+              key={seg.id}
+              onClick={() => onJumpToSegment(idx)}
+              className={`w-full text-left px-8 py-4 transition-all border-l-4 flex items-center gap-4
+                ${isActive
+                  ? 'bg-[#D94E2A]/10 border-[#D94E2A] text-[var(--text-primary)]'
+                  : isPast
+                    ? 'border-emerald-500/30 text-[var(--text-muted)] bg-emerald-500/3'
+                    : 'border-transparent text-[var(--text-tertiary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]'
+                }`}
+            >
+              {/* Segment number */}
+              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
+                ${isActive
+                  ? 'bg-[#D94E2A] text-white'
+                  : isPast
+                    ? 'bg-emerald-500/20 text-emerald-400'
+                    : 'bg-[var(--bg-subtle)] text-[var(--text-muted)]'
+                }`}
+              >
+                {isPast ? '✓' : idx + 1}
+              </span>
+
+              {/* Segment name */}
+              <span className={`text-base font-bold flex-1 ${isActive ? 'text-lg' : ''} ${isPast ? 'line-through opacity-50' : ''}`}>
+                {seg.name}
+              </span>
+
+              {/* Active indicator */}
+              {isActive && (
+                <span className="text-[#D94E2A] text-xs font-bold uppercase tracking-widest animate-pulse">
+                  NOW
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 function SlideRenderer({ slide }) {
   if (slide.type === 'gallery') {
@@ -293,6 +411,9 @@ export default function EpisodeBoard() {
   const [epDropdownOpen, setEpDropdownOpen] = useState(false)
   const [viewMode, setViewMode] = useState('show')
   const [expandedSegments, setExpandedSegments] = useState(new Set())
+  const [showSegTimer, setShowSegTimer] = useState(true)
+  const [segmentTimerSec, setSegmentTimerSec] = useState(90)
+  const [timerSettingsOpen, setTimerSettingsOpen] = useState(false)
 
   // Show timer
   const [timerRunning, setTimerRunning] = useState(false)
@@ -359,7 +480,7 @@ export default function EpisodeBoard() {
 
   // Filter segments based on view mode
   const segments = useMemo(() => {
-    if (viewMode === 'show') return allSegments.filter((s) => s.status === 'final')
+    if (viewMode === 'show' || viewMode === 'live') return allSegments.filter((s) => s.status === 'final')
     return allSegments // prep mode shows all
   }, [allSegments, viewMode])
 
@@ -457,21 +578,47 @@ export default function EpisodeBoard() {
     setActiveSlideIdx(0)
   }, [viewMode])
 
+  // Navigate to next/prev segment (for Live mode)
+  const goNextSegment = useCallback(() => {
+    if (activeSegmentIdx < segments.length - 1) {
+      setActiveSegmentIdx((i) => i + 1)
+      setActiveSlideIdx(0)
+    }
+  }, [activeSegmentIdx, segments.length])
+
+  const goPrevSegment = useCallback(() => {
+    if (activeSegmentIdx > 0) {
+      setActiveSegmentIdx((i) => i - 1)
+      setActiveSlideIdx(0)
+    }
+  }, [activeSegmentIdx])
+
   // Keyboard navigation
   useEffect(() => {
     if (viewMode === 'bank') return // no keyboard nav in bank view
     const handleKey = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault()
-        goNext()
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        goPrev()
+      if (viewMode === 'live') {
+        // In live mode: arrows and space move between segments
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+          e.preventDefault()
+          goNextSegment()
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault()
+          goPrevSegment()
+        }
+      } else {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault()
+          goNext()
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault()
+          goPrev()
+        }
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [goNext, goPrev, viewMode])
+  }, [goNext, goPrev, goNextSegment, goPrevSegment, viewMode])
 
   if (!episode) {
     return (
@@ -482,6 +629,94 @@ export default function EpisodeBoard() {
   }
 
   const currentEp = episodes.find((e) => e.id === currentEpId)
+
+  // Live mode — full-width PTI rundown
+  if (viewMode === 'live') {
+    return (
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Live mode header */}
+        <div className="px-6 py-2 border-b border-[var(--border-subtle)] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Back to other modes */}
+            <div className="flex items-center gap-0.5 bg-[var(--bg-subtle)] rounded-lg p-0.5">
+              {VIEW_MODES.map((mode) => (
+                <button
+                  key={mode.id}
+                  onClick={() => setViewMode(mode.id)}
+                  title={mode.description}
+                  className={`px-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all
+                    ${viewMode === mode.id
+                      ? 'bg-[#D94E2A]/20 text-[#D94E2A] shadow'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                    }`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+            <span className="text-[var(--text-muted)] text-xs font-bold">{currentEp?.title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Timer toggle */}
+            <button
+              onClick={() => setShowSegTimer((v) => !v)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all
+                ${showSegTimer
+                  ? 'bg-[#D94E2A]/15 text-[#D94E2A]'
+                  : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                }`}
+            >
+              <Timer size={12} />
+              Timer {showSegTimer ? 'ON' : 'OFF'}
+            </button>
+            {/* Timer duration setting */}
+            {showSegTimer && (
+              <div className="relative">
+                <button
+                  onClick={() => setTimerSettingsOpen((v) => !v)}
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-mono transition-all"
+                >
+                  <Settings size={11} />
+                  {segmentTimerSec}s
+                </button>
+                {timerSettingsOpen && (
+                  <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 p-3 w-40">
+                    <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-bold block mb-2">
+                      Seconds per segment
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {[60, 90, 120, 180].map((sec) => (
+                        <button
+                          key={sec}
+                          onClick={() => { setSegmentTimerSec(sec); setTimerSettingsOpen(false) }}
+                          className={`px-2 py-1 rounded text-xs font-mono font-bold transition-all
+                            ${segmentTimerSec === sec
+                              ? 'bg-[#D94E2A]/20 text-[#D94E2A]'
+                              : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                            }`}
+                        >
+                          {sec}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <LiveRundown
+          segments={segments}
+          activeSegmentIdx={safeSegIdx}
+          onJumpToSegment={jumpToSegment}
+          showTimer={showSegTimer}
+          segmentTimerSec={segmentTimerSec}
+          formatTimer={formatTimer}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 flex overflow-hidden">

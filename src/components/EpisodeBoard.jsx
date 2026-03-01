@@ -726,24 +726,43 @@ export default function EpisodeBoard({ forceViewMode }) {
         {/* Live mode header */}
         <div className="px-6 py-2 border-b border-[var(--border-subtle)] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Back to other modes */}
-            <div className="flex items-center gap-0.5 bg-[var(--bg-subtle)] rounded-lg p-0.5">
-              {VIEW_MODES.map((mode) => (
-                <button
-                  key={mode.id}
-                  onClick={() => setViewMode(mode.id)}
-                  title={mode.description}
-                  className={`px-2 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all
-                    ${viewMode === mode.id
-                      ? 'bg-[#D94E2A]/20 text-[#D94E2A] shadow'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-                    }`}
-                >
-                  {mode.label}
-                </button>
-              ))}
+            {/* Back button — only when NOT in pop-out */}
+            {!forceViewMode && (
+              <button
+                onClick={() => setViewMode('show')}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-wider transition-all"
+              >
+                <ChevronLeft size={12} />
+                Back
+              </button>
+            )}
+            {/* Episode dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setEpDropdownOpen(!epDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] text-xs font-bold tracking-wider transition-colors"
+              >
+                <span className="truncate max-w-[160px]">{currentEp?.title || 'Select Episode'}</span>
+                <ChevronDown size={12} className="text-[var(--text-tertiary)] flex-shrink-0" />
+              </button>
+              {epDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 overflow-hidden">
+                  {episodes.map((ep) => (
+                    <button
+                      key={ep.id}
+                      onClick={() => {
+                        setCurrentEpId(ep.id)
+                        setEpDropdownOpen(false)
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs font-semibold transition-colors
+                        ${ep.id === currentEpId ? 'bg-[var(--bg-hover)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]'}`}
+                    >
+                      {ep.title}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <span className="text-[var(--text-muted)] text-xs font-bold">{currentEp?.title}</span>
           </div>
           <div className="flex items-center gap-2">
             {/* Timer toggle */}

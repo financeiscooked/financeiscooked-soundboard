@@ -49,38 +49,69 @@ const VIEW_MODES = [
   { id: 'live', label: 'Live', description: 'PTI-style rundown for on-air' },
 ]
 
-// PTI-style Live rundown — just the topic list, no details
+// PTI-style Live rundown — topic list with expandable slides and per-segment timer memory
 function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, segmentTimerSec, formatTimer: fmt }) {
-  // Per-segment countdown
-  const [segTimerMs, setSegTimerMs] = useState(0)
-  const [segTimerRunning, setSegTimerRunning] = useState(false)
-  const segTimerStart = useRef(null)
-  const segTimerInterval = useRef(null)
+  // Per-segment timer memory: { [segIdx]: { elapsed: ms, running: bool } }
+  const [segTimers, setSegTimers] = useState({})
+  const timerInterval = useRef(null)
+  const timerStartRef = useRef(null)
+  const [expandedLiveSegs, setExpandedLiveSegs] = useState(new Set())
 
-  // Reset segment timer when segment changes
-  useEffect(() => {
-    setSegTimerMs(0)
-    setSegTimerRunning(false)
-  }, [activeSegmentIdx])
+  // Get current segment's timer state
+  const currentTimer = segTimers[activeSegmentIdx] || { elapsed: 0, running: false }
+  const isRunning = currentTimer.running
 
+  // Run the active timer
   useEffect(() => {
-    if (segTimerRunning) {
-      segTimerStart.current = Date.now() - segTimerMs
-      segTimerInterval.current = setInterval(() => {
-        setSegTimerMs(Date.now() - segTimerStart.current)
+    if (isRunning) {
+      timerStartRef.current = Date.now() - currentTimer.elapsed
+      timerInterval.current = setInterval(() => {
+        setSegTimers((prev) => ({
+          ...prev,
+          [activeSegmentIdx]: {
+            ...prev[activeSegmentIdx],
+            elapsed: Date.now() - timerStartRef.current,
+          },
+        }))
       }, 100)
-    } else if (segTimerInterval.current) {
-      clearInterval(segTimerInterval.current)
-      segTimerInterval.current = null
+    } else if (timerInterval.current) {
+      clearInterval(timerInterval.current)
+      timerInterval.current = null
     }
     return () => {
-      if (segTimerInterval.current) clearInterval(segTimerInterval.current)
+      if (timerInterval.current) clearInterval(timerInterval.current)
     }
-  }, [segTimerRunning])
+  }, [isRunning, activeSegmentIdx])
 
-  const remainingMs = Math.max(0, (segmentTimerSec * 1000) - segTimerMs)
-  const isOvertime = segTimerMs > segmentTimerSec * 1000
-  const overtimeMs = segTimerMs - segmentTimerSec * 1000
+  const toggleCurrentTimer = () => {
+    setSegTimers((prev) => ({
+      ...prev,
+      [activeSegmentIdx]: {
+        elapsed: (prev[activeSegmentIdx] || { elapsed: 0 }).elapsed,
+        running: !(prev[activeSegmentIdx] || { running: false }).running,
+      },
+    }))
+  }
+
+  const resetCurrentTimer = () => {
+    setSegTimers((prev) => ({
+      ...prev,
+      [activeSegmentIdx]: { elapsed: 0, running: false },
+    }))
+  }
+
+  const toggleExpanded = (segId) => {
+    setExpandedLiveSegs((prev) => {
+      const next = new Set(prev)
+      if (next.has(segId)) next.delete(segId)
+      else next.add(segId)
+      return next
+    })
+  }
+
+  const remainingMs = Math.max(0, (segmentTimerSec * 1000) - currentTimer.elapsed)
+  const isOvertime = currentTimer.elapsed > segmentTimerSec * 1000
+  const overtimeMs = currentTimer.elapsed - segmentTimerSec * 1000
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -92,7 +123,7 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
           <div className="flex items-center gap-3">
             <Timer size={16} className={isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-muted)]'} />
             <span className="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold">
-              Segment Timer
+              {segments[activeSegmentIdx]?.name || 'Segment Timer'}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -100,13 +131,13 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
               {isOvertime ? `+${fmt(overtimeMs)}` : fmt(remainingMs)}
             </span>
             <button
-              onClick={() => setSegTimerRunning((r) => !r)}
-              className={`p-1.5 rounded-lg transition-all ${segTimerRunning ? 'bg-red-500/15 text-[#D94E2A]' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+              onClick={toggleCurrentTimer}
+              className={`p-1.5 rounded-lg transition-all ${isRunning ? 'bg-red-500/15 text-[#D94E2A]' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
             >
-              {segTimerRunning ? <Pause size={16} /> : <Play size={16} />}
+              {isRunning ? <Pause size={16} /> : <Play size={16} />}
             </button>
             <button
-              onClick={() => { setSegTimerMs(0); setSegTimerRunning(false) }}
+              onClick={resetCurrentTimer}
               className="p-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all"
             >
               <RotateCcw size={16} />
@@ -120,43 +151,89 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
         {segments.map((seg, idx) => {
           const isActive = idx === activeSegmentIdx
           const isPast = idx < activeSegmentIdx
-          const isFuture = idx > activeSegmentIdx
+          const isExpanded = expandedLiveSegs.has(seg.id)
+          const segElapsed = (segTimers[idx] || { elapsed: 0 }).elapsed
+          const segOver = segElapsed > segmentTimerSec * 1000
           return (
-            <button
-              key={seg.id}
-              onClick={() => onJumpToSegment(idx)}
-              className={`w-full text-left px-8 py-4 transition-all border-l-4 flex items-center gap-4
-                ${isActive
-                  ? 'bg-[#D94E2A]/10 border-[#D94E2A] text-[var(--text-primary)]'
-                  : isPast
-                    ? 'border-emerald-500/30 text-[var(--text-muted)] bg-emerald-500/3'
-                    : 'border-transparent text-[var(--text-tertiary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]'
-                }`}
-            >
-              {/* Segment number */}
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
-                ${isActive
-                  ? 'bg-[#D94E2A] text-white'
-                  : isPast
-                    ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'bg-[var(--bg-subtle)] text-[var(--text-muted)]'
-                }`}
+            <div key={seg.id}>
+              <div
+                className={`w-full text-left px-8 py-4 transition-all border-l-4 flex items-center gap-4
+                  ${isActive
+                    ? 'bg-[#D94E2A]/10 border-[#D94E2A] text-[var(--text-primary)]'
+                    : isPast
+                      ? 'border-emerald-500/30 text-[var(--text-muted)] bg-emerald-500/3'
+                      : 'border-transparent text-[var(--text-tertiary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-secondary)]'
+                  }`}
               >
-                {isPast ? '✓' : idx + 1}
-              </span>
+                {/* Expand chevron */}
+                {seg.slides.length > 0 ? (
+                  <button
+                    onClick={() => toggleExpanded(seg.id)}
+                    className="p-1 rounded hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
+                  >
+                    {isExpanded
+                      ? <ChevronDown size={14} className="text-[var(--text-muted)]" />
+                      : <ChevronRight size={14} className="text-[var(--text-muted)]" />
+                    }
+                  </button>
+                ) : (
+                  <span className="w-7" />
+                )}
 
-              {/* Segment name */}
-              <span className={`text-base font-bold flex-1 ${isActive ? 'text-lg' : ''} ${isPast ? 'line-through opacity-50' : ''}`}>
-                {seg.name}
-              </span>
+                {/* Segment number */}
+                <button
+                  onClick={() => onJumpToSegment(idx)}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
+                    ${isActive
+                      ? 'bg-[#D94E2A] text-white'
+                      : isPast
+                        ? 'bg-emerald-500/20 text-emerald-400'
+                        : 'bg-[var(--bg-subtle)] text-[var(--text-muted)]'
+                    }`}
+                >
+                  {isPast ? '✓' : idx + 1}
+                </button>
 
-              {/* Active indicator */}
-              {isActive && (
-                <span className="text-[#D94E2A] text-xs font-bold uppercase tracking-widest animate-pulse">
-                  NOW
-                </span>
+                {/* Segment name */}
+                <button
+                  onClick={() => onJumpToSegment(idx)}
+                  className={`text-base font-bold flex-1 text-left ${isActive ? 'text-lg' : ''} ${isPast ? 'line-through opacity-50' : ''}`}
+                >
+                  {seg.name}
+                </button>
+
+                {/* Per-segment elapsed time (small, for past/paused segments) */}
+                {showTimer && segElapsed > 0 && !isActive && (
+                  <span className={`text-xs font-mono ${segOver ? 'text-[#D94E2A]/60' : 'text-[var(--text-hint)]'}`}>
+                    {fmt(segElapsed)}
+                  </span>
+                )}
+
+                {/* Active indicator */}
+                {isActive && (
+                  <span className="text-[#D94E2A] text-xs font-bold uppercase tracking-widest animate-pulse">
+                    NOW
+                  </span>
+                )}
+              </div>
+
+              {/* Expandable slide sub-items */}
+              {isExpanded && seg.slides.length > 0 && (
+                <div className={`border-l-4 ${isActive ? 'border-[#D94E2A]/30' : isPast ? 'border-emerald-500/10' : 'border-transparent'}`}>
+                  {seg.slides.map((slide, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="flex items-center gap-2 pl-20 pr-8 py-1.5 text-sm"
+                    >
+                      <SlideTypeIcon type={slide.type} />
+                      <span className={`truncate ${isPast ? 'text-[var(--text-hint)] line-through opacity-40' : 'text-[var(--text-muted)]'}`}>
+                        {slide.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
-            </button>
+            </div>
           )
         })}
       </div>

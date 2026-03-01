@@ -537,7 +537,7 @@ export default function EpisodeBoard() {
       .then((r) => r.json())
       .then((list) => {
         setEpisodes(list)
-        if (list.length > 0) setCurrentEpId(list[list.length - 1].id)
+        if (list.length > 0) setCurrentEpId(list[0].id)
       })
   }, [])
 

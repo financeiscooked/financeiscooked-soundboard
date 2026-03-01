@@ -157,7 +157,7 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
           return (
             <div key={seg.id}>
               <div
-                className={`w-full text-left px-8 py-4 transition-all border-l-4 flex items-center gap-4
+                className={`w-full text-left px-6 py-3 transition-all border-l-4 flex items-center gap-3
                   ${isActive
                     ? 'bg-[#D94E2A]/10 border-[#D94E2A] text-[var(--text-primary)]'
                     : isPast
@@ -169,21 +169,21 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
                 {seg.slides.length > 0 ? (
                   <button
                     onClick={() => toggleExpanded(seg.id)}
-                    className="p-1 rounded hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
+                    className="p-0.5 rounded hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
                   >
                     {isExpanded
-                      ? <ChevronDown size={14} className="text-[var(--text-muted)]" />
-                      : <ChevronRight size={14} className="text-[var(--text-muted)]" />
+                      ? <ChevronDown size={12} className="text-[var(--text-muted)]" />
+                      : <ChevronRight size={12} className="text-[var(--text-muted)]" />
                     }
                   </button>
                 ) : (
-                  <span className="w-7" />
+                  <span className="w-5" />
                 )}
 
                 {/* Segment number */}
                 <button
                   onClick={() => onJumpToSegment(idx)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
                     ${isActive
                       ? 'bg-[#D94E2A] text-white'
                       : isPast
@@ -197,7 +197,7 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
                 {/* Segment name */}
                 <button
                   onClick={() => onJumpToSegment(idx)}
-                  className={`text-base font-bold flex-1 text-left ${isActive ? 'text-lg' : ''} ${isPast ? 'line-through opacity-50' : ''}`}
+                  className={`text-sm font-bold flex-1 text-left ${isActive ? 'text-base' : ''} ${isPast ? 'line-through opacity-50' : ''}`}
                 >
                   {seg.name}
                 </button>
@@ -223,7 +223,7 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
                   {seg.slides.map((slide, sIdx) => (
                     <div
                       key={sIdx}
-                      className="flex items-center gap-2 pl-20 pr-8 py-1.5 text-sm"
+                      className="flex items-center gap-2 pl-16 pr-6 py-1 text-xs"
                     >
                       <SlideTypeIcon type={slide.type} />
                       <span className={`truncate ${isPast ? 'text-[var(--text-hint)] line-through opacity-40' : 'text-[var(--text-muted)]'}`}>

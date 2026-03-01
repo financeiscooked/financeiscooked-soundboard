@@ -50,17 +50,25 @@ const VIEW_MODES = [
   { id: 'live', label: 'Live', description: 'PTI-style rundown for on-air' },
 ]
 
+// Duration presets for per-segment timer picker
+const TIMER_PRESETS = [30, 60, 90, 120, 180, 300]
+
 // PTI-style Live rundown — topic list with expandable slides and per-segment timer memory
-function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, segmentTimerSec, formatTimer: fmt }) {
+function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, defaultTimerSec, perSegTimerSec, onSetSegTimer, formatTimer: fmt }) {
   // Per-segment timer memory: { [segIdx]: { elapsed: ms, running: bool } }
   const [segTimers, setSegTimers] = useState({})
   const timerInterval = useRef(null)
   const timerStartRef = useRef(null)
   const [expandedLiveSegs, setExpandedLiveSegs] = useState(new Set())
+  const [editingTimerSeg, setEditingTimerSeg] = useState(null) // seg.id currently being edited
+
+  // Get duration for a specific segment
+  const getSegDuration = (segId) => perSegTimerSec[segId] || defaultTimerSec
 
   // Get current segment's timer state
   const currentTimer = segTimers[activeSegmentIdx] || { elapsed: 0, running: false }
   const isRunning = currentTimer.running
+  const currentDuration = getSegDuration(segments[activeSegmentIdx]?.id)
 
   // Run the active timer
   useEffect(() => {
@@ -110,9 +118,9 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
     })
   }
 
-  const remainingMs = Math.max(0, (segmentTimerSec * 1000) - currentTimer.elapsed)
-  const isOvertime = currentTimer.elapsed > segmentTimerSec * 1000
-  const overtimeMs = currentTimer.elapsed - segmentTimerSec * 1000
+  const remainingMs = Math.max(0, (currentDuration * 1000) - currentTimer.elapsed)
+  const isOvertime = currentTimer.elapsed > currentDuration * 1000
+  const overtimeMs = currentTimer.elapsed - currentDuration * 1000
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -125,6 +133,9 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
             <Timer size={16} className={isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-muted)]'} />
             <span className="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold">
               {segments[activeSegmentIdx]?.name || 'Segment Timer'}
+            </span>
+            <span className="text-[var(--text-hint)] text-[10px] font-mono">
+              ({currentDuration}s)
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -154,7 +165,10 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
           const isPast = idx < activeSegmentIdx
           const isExpanded = expandedLiveSegs.has(seg.id)
           const segElapsed = (segTimers[idx] || { elapsed: 0 }).elapsed
-          const segOver = segElapsed > segmentTimerSec * 1000
+          const segDuration = getSegDuration(seg.id)
+          const segOver = segElapsed > segDuration * 1000
+          const isEditingTimer = editingTimerSeg === seg.id
+          const hasCustomTime = seg.id in perSegTimerSec
           return (
             <div key={seg.id}>
               <div
@@ -202,6 +216,55 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, s
                 >
                   {seg.name}
                 </button>
+
+                {/* Per-segment duration badge (clickable to edit) */}
+                {showTimer && (
+                  <div className="relative flex-shrink-0">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditingTimerSeg(isEditingTimer ? null : seg.id) }}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all
+                        ${hasCustomTime
+                          ? 'bg-[#F0A030]/15 text-[#F0A030] hover:bg-[#F0A030]/25'
+                          : 'bg-[var(--bg-subtle)] text-[var(--text-hint)] hover:text-[var(--text-muted)]'
+                        }`}
+                      title={`${segDuration}s — click to change`}
+                    >
+                      {segDuration}s
+                    </button>
+                    {isEditingTimer && (
+                      <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-30 p-2 w-44"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-bold mb-1.5 px-1">
+                          Duration for {seg.name}
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {TIMER_PRESETS.map((sec) => (
+                            <button
+                              key={sec}
+                              onClick={() => { onSetSegTimer(seg.id, sec); setEditingTimerSeg(null) }}
+                              className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition-all
+                                ${segDuration === sec
+                                  ? 'bg-[#D94E2A]/20 text-[#D94E2A]'
+                                  : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                                }`}
+                            >
+                              {sec >= 60 ? `${sec / 60}m` : `${sec}s`}
+                            </button>
+                          ))}
+                        </div>
+                        {hasCustomTime && (
+                          <button
+                            onClick={() => { onSetSegTimer(seg.id, null); setEditingTimerSeg(null) }}
+                            className="w-full mt-1.5 px-2 py-1 rounded text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] transition-all"
+                          >
+                            Reset to default ({defaultTimerSec}s)
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Per-segment elapsed time (small, for past/paused segments) */}
                 {showTimer && segElapsed > 0 && !isActive && (
@@ -501,8 +564,20 @@ export default function EpisodeBoard({ forceViewMode }) {
   }, [])
   const [expandedSegments, setExpandedSegments] = useState(new Set())
   const [showSegTimer, setShowSegTimer] = useState(true)
-  const [segmentTimerSec, setSegmentTimerSec] = useState(90)
+  const [defaultTimerSec, setDefaultTimerSec] = useState(90)
+  const [perSegTimerSec, setPerSegTimerSec] = useState({}) // { [segId]: seconds }
   const [timerSettingsOpen, setTimerSettingsOpen] = useState(false)
+
+  const handleSetSegTimer = useCallback((segId, sec) => {
+    setPerSegTimerSec((prev) => {
+      if (sec === null) {
+        const next = { ...prev }
+        delete next[segId]
+        return next
+      }
+      return { ...prev, [segId]: sec }
+    })
+  }, [])
 
   // Show timer
   const [timerRunning, setTimerRunning] = useState(false)
@@ -777,36 +852,45 @@ export default function EpisodeBoard({ forceViewMode }) {
               <Timer size={12} />
               Timer {showSegTimer ? 'ON' : 'OFF'}
             </button>
-            {/* Timer duration setting */}
+            {/* Default timer duration setting */}
             {showSegTimer && (
               <div className="relative">
                 <button
                   onClick={() => setTimerSettingsOpen((v) => !v)}
                   className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-mono transition-all"
+                  title="Default duration — click each segment's time badge to customize individually"
                 >
                   <Settings size={11} />
-                  {segmentTimerSec}s
+                  Default {defaultTimerSec}s
                 </button>
                 {timerSettingsOpen && (
-                  <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 p-3 w-40">
+                  <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 p-3 w-48">
                     <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-bold block mb-2">
-                      Seconds per segment
+                      Default seconds per segment
                     </label>
-                    <div className="flex items-center gap-2">
-                      {[60, 90, 120, 180].map((sec) => (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {TIMER_PRESETS.map((sec) => (
                         <button
                           key={sec}
-                          onClick={() => { setSegmentTimerSec(sec); setTimerSettingsOpen(false) }}
+                          onClick={() => { setDefaultTimerSec(sec); setTimerSettingsOpen(false) }}
                           className={`px-2 py-1 rounded text-xs font-mono font-bold transition-all
-                            ${segmentTimerSec === sec
+                            ${defaultTimerSec === sec
                               ? 'bg-[#D94E2A]/20 text-[#D94E2A]'
                               : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                             }`}
                         >
-                          {sec}
+                          {sec >= 60 ? `${sec / 60}m` : `${sec}s`}
                         </button>
                       ))}
                     </div>
+                    {Object.keys(perSegTimerSec).length > 0 && (
+                      <button
+                        onClick={() => { setPerSegTimerSec({}); setTimerSettingsOpen(false) }}
+                        className="w-full mt-2 px-2 py-1 rounded text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] transition-all"
+                      >
+                        Clear all custom times
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -830,7 +914,9 @@ export default function EpisodeBoard({ forceViewMode }) {
           activeSegmentIdx={safeSegIdx}
           onJumpToSegment={jumpToSegment}
           showTimer={showSegTimer}
-          segmentTimerSec={segmentTimerSec}
+          defaultTimerSec={defaultTimerSec}
+          perSegTimerSec={perSegTimerSec}
+          onSetSegTimer={handleSetSegTimer}
           formatTimer={formatTimer}
         />
       </div>

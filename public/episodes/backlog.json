@@ -65,6 +65,12 @@
       ]
     },
     {
+      "id": "useful-things",
+      "name": "Useful Things We Saw This Week",
+      "status": "proposed",
+      "slides": []
+    },
+    {
       "id": "outtro",
       "name": "Outtro",
       "status": "proposed",

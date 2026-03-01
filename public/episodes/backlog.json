@@ -48,6 +48,23 @@
       "slides": []
     },
     {
+      "id": "uncookme",
+      "name": "Uncookme!",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Uncookme!",
+          "bullets": [
+            "Recurring segment: invite a guest who has a real problem",
+            "Hosts live-solve the problem on-air using AI tools",
+            "Part troubleshooting, part showcase, all entertainment"
+          ],
+          "notes": "Format: Guest presents their problem → hosts brainstorm and build a solution live → guest reacts. Think live consulting meets improv."
+        }
+      ]
+    },
+    {
       "id": "outtro",
       "name": "Outtro",
       "status": "proposed",

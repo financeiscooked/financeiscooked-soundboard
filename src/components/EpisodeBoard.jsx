@@ -18,6 +18,7 @@ import {
   Info,
   Timer,
   Settings,
+  ExternalLink,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -479,14 +480,25 @@ function ProposedBank({ episodes, onSelectSlide }) {
   )
 }
 
-export default function EpisodeBoard() {
+export default function EpisodeBoard({ forceViewMode }) {
   const [episodes, setEpisodes] = useState([])
   const [currentEpId, setCurrentEpId] = useState(null)
   const [episode, setEpisode] = useState(null)
   const [activeSegmentIdx, setActiveSegmentIdx] = useState(0)
   const [activeSlideIdx, setActiveSlideIdx] = useState(0)
   const [epDropdownOpen, setEpDropdownOpen] = useState(false)
-  const [viewMode, setViewMode] = useState('show')
+  const [viewMode, setViewMode] = useState(forceViewMode || 'show')
+
+  const popOutLive = useCallback(() => {
+    const w = 380
+    const h = window.screen.availHeight
+    const left = window.screen.availWidth - w
+    window.open(
+      `${window.location.origin}?mode=live`,
+      'fic-live-rundown',
+      `width=${w},height=${h},left=${left},top=0,resizable=yes,scrollbars=yes`
+    )
+  }, [])
   const [expandedSegments, setExpandedSegments] = useState(new Set())
   const [showSegTimer, setShowSegTimer] = useState(true)
   const [segmentTimerSec, setSegmentTimerSec] = useState(90)
@@ -779,6 +791,17 @@ export default function EpisodeBoard() {
                   </div>
                 )}
               </div>
+            )}
+            {/* Pop-out button */}
+            {!forceViewMode && (
+              <button
+                onClick={popOutLive}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-bold transition-all"
+                title="Pop out Live rundown in a narrow window"
+              >
+                <ExternalLink size={12} />
+                Pop Out
+              </button>
             )}
           </div>
         </div>

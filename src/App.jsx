@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Volume2, Image, Tv, Sun, Moon } from 'lucide-react'
 import SoundBoard from './components/SoundBoard'
 import MemeBoard from './components/MemeBoard'
@@ -11,9 +11,27 @@ const TABS = [
   { id: 'episodes', label: 'Episodes', icon: Tv },
 ]
 
+// Check if launched in pop-out live mode via ?mode=live
+function useIsPopout() {
+  return useMemo(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('mode') === 'live'
+  }, [])
+}
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState('sounds')
+  const isPopout = useIsPopout()
+  const [activeTab, setActiveTab] = useState(isPopout ? 'episodes' : 'sounds')
   const { theme, toggleTheme } = useTheme()
+
+  // Pop-out mode: just the EpisodeBoard, no header/tabs
+  if (isPopout) {
+    return (
+      <div className="h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
+        <EpisodeBoard forceViewMode="live" />
+      </div>
+    )
+  }
 
   return (
     <div className="h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">

@@ -32,6 +32,13 @@
           "title": "Is This the Future of Every Company?",
           "url": "https://x.com/zackbshapiro/status/2027389987444957625",
           "notes": "Zack Shapiro tweet — raises the question: is this what the future of every company looks like? Big implications for how businesses are structured and operated going forward."
+        },
+        {
+          "type": "link",
+          "title": "FloQast Adds Agent Builder for Accounting",
+          "url": "https://www.floqast.com/ai-agents",
+          "notes": "FloQast launched an agent builder letting accounting teams build and deploy AI agents — includes a live demo. Big move from an established accounting platform into agentic workflows.",
+          "status": "proposed"
         }
       ]
     },

@@ -53,6 +53,13 @@
           "url": "https://www.linkedin.com/posts/alyona-mysko_heres-what-happened-in-ai-in-february-that-activity-7434271268188635136-jZlh",
           "notes": "LinkedIn roundup by Alyona Mysko summarizing the biggest AI developments from February 2026. Great overview post to reference for the show.",
           "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "Crypto.com Announces OpenClaw API Integration",
+          "url": "",
+          "notes": "Crypto.com announced an integration with the OpenClaw API — details on what this means for crypto infrastructure and developer access. Link TBD.",
+          "status": "proposed"
         }
       ]
     },

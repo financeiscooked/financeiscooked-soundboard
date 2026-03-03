@@ -48,6 +48,23 @@
       "slides": []
     },
     {
+      "id": "ai-thingzzz",
+      "name": "AI ThingZzz",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "What Is an Agent?",
+          "bullets": [
+            "Breaking down AI agents — what they are, how they work, and why everyone's talking about them",
+            "Recurring segment: demystify AI concepts for finance & accounting professionals"
+          ],
+          "notes": "Explainer segment — make AI jargon accessible. First topic: What is an agent? Cover autonomous action, tool use, reasoning loops, and real-world examples in finance.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "uncookme",
       "name": "Uncookme!",
       "status": "proposed",

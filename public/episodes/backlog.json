@@ -221,6 +221,18 @@
           ],
           "notes": "Guest segment featuring Gero Piskov. Discussion on how AI is transforming treasury management — cash forecasting, liquidity planning, risk management, and what modern treasury operations look like with AI in the toolkit.",
           "status": "proposed"
+        },
+        {
+          "type": "text",
+          "title": "AI Impact on the World — Ailin Pallisso Poux",
+          "bullets": [
+            "Welcome guest Ailin Pallisso Poux",
+            "Topic: AI's impact on the world — building for others, not just yourself",
+            "Topic: using AI to plug personal gaps and grow beyond your limitations",
+            "Recurring segment: perspectives from finance leaders navigating the AI transformation"
+          ],
+          "notes": "Guest segment featuring Ailin Pallisso Poux. Discussion on how AI is impacting the world at large, building products and solutions for others, and how she uses AI to fill personal skill and knowledge gaps.",
+          "status": "proposed"
         }
       ]
     },

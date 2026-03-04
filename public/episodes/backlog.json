@@ -231,6 +231,17 @@
           ],
           "notes": "Recurring segment: spotlight useful AI tools with live demos. First feature: Notion Custom Agents — walk through how to set them up, what they can do, and how finance teams can use them to automate workspace tasks.",
           "status": "proposed"
+        },
+        {
+          "type": "text",
+          "title": "11Labs Agent — Walkthrough / Demo",
+          "bullets": [
+            "Live walkthrough: building and deploying a conversational AI agent with ElevenLabs",
+            "How 11Labs Agents handle voice synthesis, real-time conversation, and custom knowledge bases",
+            "Practical demo: creating an AI voice agent for finance & accounting use cases"
+          ],
+          "notes": "Recurring segment: spotlight useful AI tools with live demos. Feature: ElevenLabs Conversational AI Agents — walk through setup, voice configuration, knowledge base integration, and how finance teams can deploy voice agents for client interactions, internal support, or workflow automation.",
+          "status": "proposed"
         }
       ]
     },

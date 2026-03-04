@@ -131,6 +131,23 @@
       ]
     },
     {
+      "id": "the-future-accountant",
+      "name": "The Future Accountant",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "The Future Accountant",
+          "bullets": [
+            "Welcome guest accountant Thea Yatras",
+            "Recurring segment: exploring what the modern accountant looks like in the age of AI"
+          ],
+          "notes": "Guest segment featuring accountant Thea Yatras. Discussion on how AI is reshaping the accounting profession — skills, tools, workflows, and what the future accountant needs to thrive.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "coming-soon",
       "name": "Coming Soon",
       "status": "proposed",

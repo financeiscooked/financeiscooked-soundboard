@@ -191,6 +191,17 @@
           ],
           "notes": "Guest segment featuring Vince Tejada. Discussion on how he is actively leading with AI — adoption strategy, practical implementation, and what it looks like to champion AI from a leadership seat in finance.",
           "status": "proposed"
+        },
+        {
+          "type": "text",
+          "title": "Thinking About AI in Finance — Scott Kincaid",
+          "bullets": [
+            "Welcome guest Scott Kincaid",
+            "Topic: how he thinks about AI in finance",
+            "Recurring segment: perspectives from finance leaders navigating the AI transformation"
+          ],
+          "notes": "Guest segment featuring Scott Kincaid. Discussion on his perspective and framework for thinking about AI in finance — where it fits, where it's headed, and how finance leaders should be approaching it strategically.",
+          "status": "proposed"
         }
       ]
     },

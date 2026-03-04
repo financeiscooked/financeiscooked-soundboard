@@ -217,6 +217,24 @@
       ]
     },
     {
+      "id": "useful-ai-tools",
+      "name": "Useful AI Tools",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Notion Custom Agents — Walkthrough",
+          "bullets": [
+            "Live walkthrough: building and using custom agents inside Notion",
+            "How Notion's AI agents can automate workflows, summarize content, and act on your workspace",
+            "Practical demo for finance & accounting professionals"
+          ],
+          "notes": "Recurring segment: spotlight useful AI tools with live demos. First feature: Notion Custom Agents — walk through how to set them up, what they can do, and how finance teams can use them to automate workspace tasks.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "coming-soon",
       "name": "Coming Soon",
       "status": "proposed",

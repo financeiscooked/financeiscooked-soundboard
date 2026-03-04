@@ -166,6 +166,24 @@
       ]
     },
     {
+      "id": "finance-leader-perspectives",
+      "name": "Finance Leader Perspectives",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Leading in Finance in an AI Age",
+          "bullets": [
+            "Welcome guest Sloan Session",
+            "Recurring segment: perspectives from finance leaders navigating the AI transformation",
+            "Topic: what does leadership in finance look like when AI is reshaping the profession?"
+          ],
+          "notes": "Guest segment featuring Sloan Session. Discussion on leading finance teams and organizations through the AI revolution — strategy, talent, change management, and what it takes to lead when the tools are evolving faster than the playbook.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "coming-soon",
       "name": "Coming Soon",
       "status": "proposed",

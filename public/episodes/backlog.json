@@ -202,6 +202,17 @@
           ],
           "notes": "Guest segment featuring Scott Kincaid. Discussion on his perspective and framework for thinking about AI in finance — where it fits, where it's headed, and how finance leaders should be approaching it strategically.",
           "status": "proposed"
+        },
+        {
+          "type": "text",
+          "title": "Treasury Management and AI — Gero Piskov",
+          "bullets": [
+            "Welcome guest Gero Piskov",
+            "Topic: Treasury Management and AI",
+            "Recurring segment: perspectives from finance leaders navigating the AI transformation"
+          ],
+          "notes": "Guest segment featuring Gero Piskov. Discussion on how AI is transforming treasury management — cash forecasting, liquidity planning, risk management, and what modern treasury operations look like with AI in the toolkit.",
+          "status": "proposed"
         }
       ]
     },

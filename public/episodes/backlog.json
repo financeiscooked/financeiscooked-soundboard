@@ -180,6 +180,17 @@
           ],
           "notes": "Guest segment featuring Sloan Session. Discussion on leading finance teams and organizations through the AI revolution — strategy, talent, change management, and what it takes to lead when the tools are evolving faster than the playbook.",
           "status": "proposed"
+        },
+        {
+          "type": "text",
+          "title": "Leading with AI — Vince Tejada",
+          "bullets": [
+            "Welcome guest Vince Tejada",
+            "Topic: how he is leading with AI in finance",
+            "Recurring segment: perspectives from finance leaders navigating the AI transformation"
+          ],
+          "notes": "Guest segment featuring Vince Tejada. Discussion on how he is actively leading with AI — adoption strategy, practical implementation, and what it looks like to champion AI from a leadership seat in finance.",
+          "status": "proposed"
         }
       ]
     },

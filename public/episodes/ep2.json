@@ -85,6 +85,13 @@
           "url": "https://www.linkedin.com/posts/innovationforall_ai-tax-engines-are-great-but-it-doesnt-solve-activity-7435047671578378240-4BBb",
           "notes": "A founder argues AI tax engines are great but don't solve the full problem. The show angle: what they're saying AI can't do today is probably a month away from being solved. Perfect example of underestimating the pace of AI progress in finance.",
           "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "Vibe-Coded Desk Reservation Tool — Inspiring Others to Build",
+          "url": "https://www.linkedin.com/posts/brock-beyer-818218a7_i-built-a-desk-reservation-tool-100-vibe-activity-7435037989027737600-Ba0P",
+          "notes": "Brock Beyer built a desk reservation tool 100% vibe-coded — great story about a non-developer just going for it with AI. Includes a helpful prompt guide at the bottom. The angle: inspiring others in finance & accounting to start building their own tools.",
+          "status": "proposed"
         }
       ]
     },

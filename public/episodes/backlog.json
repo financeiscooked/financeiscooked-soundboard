@@ -148,6 +148,24 @@
       ]
     },
     {
+      "id": "off-the-deep-end",
+      "name": "Off the Deep End",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "What Really Happens When You Send a Chat Message?",
+          "bullets": [
+            "Deep-dive: trace what actually happens under the hood when you send a message to an LLM",
+            "Actually ask an LLM live on the call to explain it — meta moment",
+            "Reference: Anthropic engineering on code execution with MCP"
+          ],
+          "notes": "Recurring segment: go absurdly deep on a technical topic and make it entertaining. First topic: the journey of a chat message — from keystroke to tokenization to inference to response. Actually demo it live by asking an LLM to explain itself. Source: https://www.anthropic.com/engineering/code-execution-with-mcp",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "coming-soon",
       "name": "Coming Soon",
       "status": "proposed",

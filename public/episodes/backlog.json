@@ -111,6 +111,26 @@
       ]
     },
     {
+      "id": "ai-and-crypto",
+      "name": "AI and Crypto",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Crypto Wasn't Made for Humans — It Was Made for AI",
+          "bullets": [
+            "Ever eyeballed a crypto address? 0x7a250d... — humans weren't built for this",
+            "Protocol gets hacked → you get notified on Twitter. What if you're not on Twitter? AI agents monitor 24/7",
+            "Like SWIFT codes, crypto addresses are machine-native — AI reads them natively",
+            "Example: You want safer DeFi → AI agent moves your funds from a risky protocol into AAVE, or presents you a plan to approve",
+            "You may not even know what AAVE is — and that's the point. AI abstracts the complexity"
+          ],
+          "notes": "Source: Bankless — https://x.com/bankless/status/2028455291000340911 — Thesis: Crypto's UX was never designed for humans. Addresses, protocols, monitoring — it's all machine-readable. AI agents are the missing UX layer that makes crypto actually usable. Recurring segment potential: exploring the AI × crypto intersection.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "coming-soon",
       "name": "Coming Soon",
       "status": "proposed",

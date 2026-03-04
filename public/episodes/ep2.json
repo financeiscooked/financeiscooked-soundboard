@@ -7,7 +7,18 @@
       "id": "open-intro",
       "name": "Open / Intro",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "text",
+          "title": "Suno AI Music Demo",
+          "bullets": [
+            "Show Suno AI music generation live",
+            "\"For when you need a break from spreadsheets\"",
+            "Demo how easy it is to create music with AI — fun cold open energy"
+          ],
+          "notes": "Cold open moment: actually demo Suno to generate music live. The vibe is 'finance people need a break from spreadsheets sometimes' — light, fun, sets the tone for the episode."
+        }
+      ]
     },
     {
       "id": "app-of-the-show",

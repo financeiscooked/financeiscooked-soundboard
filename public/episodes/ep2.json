@@ -93,6 +93,23 @@
       ]
     },
     {
+      "id": "bigco-corner",
+      "name": "BigCo Corner",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "text",
+          "title": "BigCo Corner",
+          "bullets": [
+            "Recurring segment: spotlight how big companies are adopting and deploying AI",
+            "Enterprise AI strategy, internal tools, workforce changes, and real implementations"
+          ],
+          "notes": "Discussion segment covering AI moves by large corporations — think Big 4, Fortune 500, major banks, tech giants. What are they building, buying, and rolling out?",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "take-of-the-show",
       "name": "Take of the Show",
       "status": "proposed",

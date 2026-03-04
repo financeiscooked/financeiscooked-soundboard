@@ -78,6 +78,13 @@
           "url": "",
           "notes": "Crypto.com announced an integration with the OpenClaw API — details on what this means for crypto infrastructure and developer access. Link TBD.",
           "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "Founder Says AI Tax Engines Don't Solve Everything — Give It a Month",
+          "url": "https://www.linkedin.com/posts/innovationforall_ai-tax-engines-are-great-but-it-doesnt-solve-activity-7435047671578378240-4BBb",
+          "notes": "A founder argues AI tax engines are great but don't solve the full problem. The show angle: what they're saying AI can't do today is probably a month away from being solved. Perfect example of underestimating the pace of AI progress in finance.",
+          "status": "proposed"
         }
       ]
     },

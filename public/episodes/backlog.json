@@ -19,7 +19,15 @@
       "id": "in-the-news",
       "name": "In the News Updates",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "link",
+          "title": "AI Can't Do Transfer Pricing?",
+          "url": "https://www.linkedin.com/posts/secret-cfo_psa-please-dont-hack-a-transfer-pricing-activity-7432798007538135040-Nryw",
+          "notes": "Secret CFO post — PSA on why you shouldn't hack transfer pricing with AI. Transfer pricing is one of those areas where AI oversimplification could create serious compliance and regulatory risk.",
+          "status": "proposed"
+        }
+      ]
     },
     {
       "id": "take-of-the-show",

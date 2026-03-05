@@ -92,6 +92,13 @@
           "url": "https://www.linkedin.com/posts/brock-beyer-818218a7_i-built-a-desk-reservation-tool-100-vibe-activity-7435037989027737600-Ba0P",
           "notes": "Brock Beyer built a desk reservation tool 100% vibe-coded — great story about a non-developer just going for it with AI. Includes a helpful prompt guide at the bottom. The angle: inspiring others in finance & accounting to start building their own tools.",
           "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "NYT Sends Autonomous Agent Reporter Into Moltbook",
+          "url": "",
+          "notes": "The New York Times deployed an autonomous AI agent as a reporter into Moltbook to report on it. Massive signal — legacy media is now using AI agents for journalism. Raises questions about AI-generated reporting, trust, and what happens when autonomous agents are the ones gathering and writing the news.",
+          "status": "proposed"
         }
       ]
     },

@@ -99,6 +99,13 @@
           "url": "",
           "notes": "The New York Times deployed an autonomous AI agent as a reporter into Moltbook to report on it. Massive signal — legacy media is now using AI agents for journalism. Raises questions about AI-generated reporting, trust, and what happens when autonomous agents are the ones gathering and writing the news.",
           "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "AI Tax Return Accuracy Benchmark — GPT-5.4 Leads at 57%",
+          "url": "https://www.linkedin.com/posts/michaelrbock_the-rivalry-between-openai-anthropic-continues-activity-7435697215009955840-8y7E",
+          "notes": "LinkedIn post showing the % of tax returns each model completed PERFECTLY. GPT-5.4: 56.86%, Claude Opus 4.6: 52.94%, Gemini 3.1 Pro: 49.02%, GPT-5 w/ Web Search: 41.67%, GPT-5.2 Pro: 41.18%, Claude Sonnet 4.6: 37.25%, Gemini 3 Pro: 36.27%, Claude Opus 4.5: 36.27%, GPT-5.2: 33.82%, Gemini 2.5 Pro: 32.35%. The rivalry is heating up — but even the best model only nails ~57% perfectly. What does that mean for tax pros?",
+          "status": "proposed"
         }
       ]
     },

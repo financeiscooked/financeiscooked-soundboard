@@ -19,6 +19,10 @@ import {
   Timer,
   Settings,
   ExternalLink,
+  Check,
+  X,
+  Loader2,
+  Send,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -442,6 +446,156 @@ function StatusBadge({ status }) {
 }
 
 // Proposed Bank — shows all proposed slides across all episodes, grouped by segment
+async function sendToProducer(message) {
+  try {
+    const res = await fetch('/.netlify/functions/slack-send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    })
+    const data = await res.json()
+    if (!data.ok) throw new Error(data.error || 'Slack send failed')
+    return { ok: true }
+  } catch (err) {
+    console.error('Failed to send to producer:', err)
+    return { ok: false, error: err.message }
+  }
+}
+
+function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes }) {
+  const [sending, setSending] = useState(null)
+  const [result, setResult] = useState(null)
+  const [targetEp, setTargetEp] = useState(episode.id)
+  const [showEpPicker, setShowEpPicker] = useState(false)
+
+  const isBacklog = episode.id === 'backlog'
+
+  const handleAccept = async () => {
+    if (!showEpPicker) {
+      setShowEpPicker(true)
+      if (isBacklog) setTargetEp('')
+      return
+    }
+
+    if (!targetEp) return
+
+    setSending('accept')
+    setResult(null)
+
+    let message
+    if (targetEp === episode.id) {
+      // Staying in same place — just finalize
+      message = `@producer finalize "${slide.title}" in ${episode.id} ${segment.id}`
+    } else {
+      // Moving to a different episode (or to backlog)
+      message = `@producer move "${slide.title}" from ${episode.id} ${segment.id} to ${targetEp} ${segment.id} and finalize it`
+    }
+
+    const res = await sendToProducer(message)
+    setResult(res)
+    setSending(null)
+    setShowEpPicker(false)
+
+    if (res.ok) {
+      setTimeout(() => setResult(null), 3000)
+    }
+  }
+
+  const handleReject = async () => {
+    setSending('reject')
+    setResult(null)
+
+    const message = `@producer remove "${slide.title}" from ${episode.id} ${segment.id}`
+
+    const res = await sendToProducer(message)
+    setResult(res)
+    setSending(null)
+    setShowEpPicker(false)
+
+    if (res.ok) {
+      setTimeout(() => setResult(null), 3000)
+    }
+  }
+
+  return (
+    <div className="w-full bg-[var(--bg-subtle)] border border-yellow-500/10 rounded-xl p-4 transition-all">
+      <button
+        onClick={() => onSelectSlide(episode.id, segment.id, slideIdx)}
+        className="w-full text-left hover:opacity-80 transition-opacity"
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <SlideTypeIcon type={slide.type} />
+          <span className="text-[var(--text-primary)] font-bold text-sm">{slide.title}</span>
+        </div>
+        {slide.notes && (
+          <p className="text-[var(--text-muted)] text-xs mt-1 line-clamp-2">{slide.notes}</p>
+        )}
+        {slide.url && (
+          <p className="text-[#4A9FD9]/50 text-[10px] mt-1 truncate">{slide.url}</p>
+        )}
+      </button>
+
+      <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[var(--border-subtle)]">
+        {/* Episode picker — shown after clicking Accept */}
+        {showEpPicker && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[var(--text-muted)] text-xs">Assign to:</span>
+            <select
+              value={targetEp}
+              onChange={(e) => setTargetEp(e.target.value)}
+              className="px-2 py-1 rounded-lg text-xs bg-[var(--bg-primary)] border border-[var(--border-default)] text-[var(--text-primary)] outline-none"
+            >
+              <option value="">Select episode...</option>
+              <option value="backlog">Backlog</option>
+              {(allEpisodes || []).filter((ep) => ep.id !== 'backlog').map((ep) => (
+                <option key={ep.id} value={ep.id}>{ep.title || ep.id}</option>
+              ))}
+            </select>
+            <button
+              onClick={() => { setShowEpPicker(false); setTargetEp(episode.id) }}
+              className="text-[var(--text-muted)] text-xs hover:text-[var(--text-secondary)] transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleAccept}
+            disabled={sending !== null || (showEpPicker && !targetEp)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                       bg-emerald-500/15 text-emerald-400 border border-emerald-500/20
+                       hover:bg-emerald-500/25 transition-all
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {sending === 'accept' ? <Loader2 size={12} className="animate-spin" /> : showEpPicker ? <Send size={12} /> : <Check size={12} />}
+            {sending === 'accept' ? 'Sending...' : showEpPicker && targetEp ? `Confirm → ${targetEp}` : 'Accept'}
+          </button>
+          <button
+            onClick={handleReject}
+            disabled={sending !== null}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                       bg-red-500/15 text-red-400 border border-red-500/20
+                       hover:bg-red-500/25 transition-all
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {sending === 'reject' ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
+            {sending === 'reject' ? 'Sending...' : 'Reject'}
+          </button>
+
+          {result && (
+            <span className={`flex items-center gap-1 text-xs ml-2 ${result.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+              {result.ok ? <><Send size={10} /> Sent to @producer!</> : `Error: ${result.error}`}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ProposedBank({ episodes, onSelectSlide }) {
   const [allEpisodes, setAllEpisodes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -517,22 +671,15 @@ function ProposedBank({ episodes, onSelectSlide }) {
               {/* Individual slides */}
               <div className="space-y-2 ml-4">
                 {segment.slides.map((slide, slideIdx) => (
-                  <button
+                  <ProposedSlideCard
                     key={slideIdx}
-                    onClick={() => onSelectSlide(episode.id, segment.id, slideIdx)}
-                    className="w-full text-left bg-[var(--bg-subtle)] border border-yellow-500/10 hover:border-yellow-500/25 rounded-xl p-4 transition-all hover:bg-[var(--bg-active)] group"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <SlideTypeIcon type={slide.type} />
-                      <span className="text-[var(--text-primary)] font-bold text-sm">{slide.title}</span>
-                    </div>
-                    {slide.notes && (
-                      <p className="text-[var(--text-muted)] text-xs mt-1 line-clamp-2">{slide.notes}</p>
-                    )}
-                    {slide.url && (
-                      <p className="text-[#4A9FD9]/50 text-[10px] mt-1 truncate">{slide.url}</p>
-                    )}
-                  </button>
+                    episode={episode}
+                    segment={segment}
+                    slide={slide}
+                    slideIdx={slideIdx}
+                    onSelectSlide={onSelectSlide}
+                    allEpisodes={allEpisodes}
+                  />
                 ))}
               </div>
             </div>

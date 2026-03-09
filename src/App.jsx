@@ -4,6 +4,7 @@ import SoundBoard from './components/SoundBoard'
 import MemeBoard from './components/MemeBoard'
 import EpisodeBoard from './components/EpisodeBoard'
 import { useTheme } from './ThemeContext'
+import Toast from './components/Toast'
 
 const TABS = [
   { id: 'sounds', label: 'Soundboard', icon: Volume2 },
@@ -29,6 +30,7 @@ export default function App() {
     return (
       <div className="h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
         <EpisodeBoard forceViewMode="live" />
+        <Toast />
       </div>
     )
   }
@@ -94,6 +96,7 @@ export default function App() {
         {activeTab === 'memes' && <MemeBoard />}
         {activeTab === 'episodes' && <EpisodeBoard />}
       </div>
+      <Toast />
     </div>
   )
 }

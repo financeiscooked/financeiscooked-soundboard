@@ -462,6 +462,112 @@ async function sendToProducer(message) {
   }
 }
 
+// Sidebar action buttons for Prep/Show segments
+function SidebarSegmentActions({ viewMode, episodeId, segmentId, segmentName }) {
+  const [sending, setSending] = useState(null)
+  const [result, setResult] = useState(null)
+
+  const handleAccept = async () => {
+    setSending('accept')
+    setResult(null)
+    const res = await sendToProducer(`@producer finalize "${segmentName}" in ${episodeId} ${segmentId}`)
+    setResult(res)
+    setSending(null)
+    if (res.ok) setTimeout(() => setResult(null), 3000)
+  }
+
+  const handleBacklog = async () => {
+    setSending('backlog')
+    setResult(null)
+    const res = await sendToProducer(`@producer move "${segmentName}" from ${episodeId} ${segmentId} to backlog ${segmentId}`)
+    setResult(res)
+    setSending(null)
+    if (res.ok) setTimeout(() => setResult(null), 3000)
+  }
+
+  const handleDelete = async () => {
+    setSending('delete')
+    setResult(null)
+    const res = await sendToProducer(`@producer remove "${segmentName}" from ${episodeId} ${segmentId}`)
+    setResult(res)
+    setSending(null)
+    if (res.ok) setTimeout(() => setResult(null), 3000)
+  }
+
+  return (
+    <div className="ml-4 px-3 py-2 border-l border-[var(--border-subtle)]">
+      <ActionRow
+        viewMode={viewMode}
+        sending={sending}
+        onAccept={handleAccept}
+        onBacklog={handleBacklog}
+        onDelete={handleDelete}
+        result={result}
+        showEpPicker={false}
+        targetEp={null}
+        acceptDisabled={false}
+      />
+    </div>
+  )
+}
+
+// Reusable action button row — renders the right buttons based on viewMode
+// Bank: Accept + Delete | Prep: Accept + Backlog + Delete | Show: Backlog only
+function ActionRow({ viewMode, sending, onAccept, onBacklog, onDelete, result, showEpPicker, targetEp, acceptDisabled }) {
+  const showAccept = viewMode === 'bank' || viewMode === 'prep'
+  const showBacklog = viewMode === 'prep' || viewMode === 'show'
+  const showDelete = viewMode === 'bank' || viewMode === 'prep'
+
+  return (
+    <div className="flex items-center gap-2">
+      {showAccept && (
+        <button
+          onClick={onAccept}
+          disabled={sending !== null || acceptDisabled}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                     bg-emerald-500/15 text-emerald-400 border border-emerald-500/20
+                     hover:bg-emerald-500/25 transition-all
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {sending === 'accept' ? <Loader2 size={12} className="animate-spin" /> : showEpPicker ? <Send size={12} /> : <Check size={12} />}
+          {sending === 'accept' ? 'Sending...' : showEpPicker && targetEp ? `Confirm → ${targetEp}` : 'Accept'}
+        </button>
+      )}
+      {showBacklog && (
+        <button
+          onClick={onBacklog}
+          disabled={sending !== null}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                     bg-amber-500/15 text-amber-400 border border-amber-500/20
+                     hover:bg-amber-500/25 transition-all
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {sending === 'backlog' ? <Loader2 size={12} className="animate-spin" /> : <Archive size={12} />}
+          {sending === 'backlog' ? 'Moving...' : 'Backlog'}
+        </button>
+      )}
+      {showDelete && (
+        <button
+          onClick={onDelete}
+          disabled={sending !== null}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                     bg-red-500/15 text-red-400 border border-red-500/20
+                     hover:bg-red-500/25 transition-all
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {sending === 'delete' ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
+          {sending === 'delete' ? 'Deleting...' : 'Delete'}
+        </button>
+      )}
+      {result && (
+        <span className={`flex items-center gap-1 text-xs ml-2 ${result.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+          {result.ok ? <><Send size={10} /> Sent to @producer!</> : `Error: ${result.error}`}
+        </span>
+      )}
+    </div>
+  )
+}
+
 function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes }) {
   const [sending, setSending] = useState(null)
   const [result, setResult] = useState(null)
@@ -572,36 +678,17 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
           </div>
         )}
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleAccept}
-            disabled={sending !== null || (showEpPicker && !targetEp)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
-                       bg-emerald-500/15 text-emerald-400 border border-emerald-500/20
-                       hover:bg-emerald-500/25 transition-all
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {sending === 'accept' ? <Loader2 size={12} className="animate-spin" /> : showEpPicker ? <Send size={12} /> : <Check size={12} />}
-            {sending === 'accept' ? 'Sending...' : showEpPicker && targetEp ? `Confirm → ${targetEp}` : 'Accept'}
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={sending !== null}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
-                       bg-red-500/15 text-red-400 border border-red-500/20
-                       hover:bg-red-500/25 transition-all
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {sending === 'delete' ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
-            {sending === 'delete' ? 'Deleting...' : 'Delete'}
-          </button>
-
-          {result && (
-            <span className={`flex items-center gap-1 text-xs ml-2 ${result.ok ? 'text-emerald-400' : 'text-red-400'}`}>
-              {result.ok ? <><Send size={10} /> Sent to @producer!</> : `Error: ${result.error}`}
-            </span>
-          )}
-        </div>
+        <ActionRow
+          viewMode="bank"
+          sending={sending}
+          onAccept={handleAccept}
+          onBacklog={handleBacklog}
+          onDelete={handleDelete}
+          result={result}
+          showEpPicker={showEpPicker}
+          targetEp={targetEp}
+          acceptDisabled={showEpPicker && !targetEp}
+        />
       </div>
     </div>
   )
@@ -1236,6 +1323,15 @@ export default function EpisodeBoard({ forceViewMode }) {
                           )
                         })}
                       </div>
+                    )}
+                    {/* Segment action buttons (Prep/Show only) */}
+                    {isExpanded && (viewMode === 'prep' || viewMode === 'show') && segStatus === 'proposed' && (
+                      <SidebarSegmentActions
+                        viewMode={viewMode}
+                        episodeId={episode?.id}
+                        segmentId={seg.id}
+                        segmentName={seg.name}
+                      />
                     )}
                   </div>
                 )

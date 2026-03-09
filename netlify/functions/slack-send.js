@@ -12,31 +12,39 @@ export default async (req) => {
     });
   }
 
-  const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+  const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
+  const SLACK_CHANNEL_ID = process.env.SLACK_CHANNEL_ID;
 
-  if (!SLACK_WEBHOOK_URL) {
-    return new Response(JSON.stringify({ error: 'Slack webhook not configured' }), {
+  if (!SLACK_BOT_TOKEN || !SLACK_CHANNEL_ID) {
+    return new Response(JSON.stringify({ error: 'Slack not configured' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
   try {
-    const slackRes = await fetch(SLACK_WEBHOOK_URL, {
+    const slackRes = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: message }),
+      headers: {
+        'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        channel: SLACK_CHANNEL_ID,
+        text: message,
+      }),
     });
 
-    if (!slackRes.ok) {
-      const errText = await slackRes.text();
-      return new Response(JSON.stringify({ error: errText }), {
+    const data = await slackRes.json();
+
+    if (!data.ok) {
+      return new Response(JSON.stringify({ error: data.error }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ ok: true, ts: data.ts }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

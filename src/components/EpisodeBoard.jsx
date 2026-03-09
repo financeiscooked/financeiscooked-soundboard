@@ -484,10 +484,8 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
 
     let message
     if (targetEp === episode.id) {
-      // Staying in same place — just finalize
       message = `@producer finalize "${slide.title}" in ${episode.id} ${segment.id}`
     } else {
-      // Moving to a different episode (or to backlog)
       message = `@producer move "${slide.title}" from ${episode.id} ${segment.id} to ${targetEp} ${segment.id} and finalize it`
     }
 
@@ -501,8 +499,8 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
     }
   }
 
-  const handleReject = async () => {
-    setSending('reject')
+  const handleDelete = async () => {
+    setSending('delete')
     setResult(null)
 
     const message = `@producer remove "${slide.title}" from ${episode.id} ${segment.id}`
@@ -511,6 +509,21 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
     setResult(res)
     setSending(null)
     setShowEpPicker(false)
+
+    if (res.ok) {
+      setTimeout(() => setResult(null), 3000)
+    }
+  }
+
+  const handleBacklog = async () => {
+    setSending('backlog')
+    setResult(null)
+
+    const message = `@producer move "${slide.title}" from ${episode.id} ${segment.id} to backlog ${segment.id}`
+
+    const res = await sendToProducer(message)
+    setResult(res)
+    setSending(null)
 
     if (res.ok) {
       setTimeout(() => setResult(null), 3000)
@@ -536,7 +549,6 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
       </button>
 
       <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[var(--border-subtle)]">
-        {/* Episode picker — shown after clicking Accept */}
         {showEpPicker && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[var(--text-muted)] text-xs">Assign to:</span>
@@ -560,7 +572,6 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
           </div>
         )}
 
-        {/* Action buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={handleAccept}
@@ -574,15 +585,15 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
             {sending === 'accept' ? 'Sending...' : showEpPicker && targetEp ? `Confirm → ${targetEp}` : 'Accept'}
           </button>
           <button
-            onClick={handleReject}
+            onClick={handleDelete}
             disabled={sending !== null}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
                        bg-red-500/15 text-red-400 border border-red-500/20
                        hover:bg-red-500/25 transition-all
                        disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {sending === 'reject' ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
-            {sending === 'reject' ? 'Sending...' : 'Reject'}
+            {sending === 'delete' ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
+            {sending === 'delete' ? 'Deleting...' : 'Delete'}
           </button>
 
           {result && (
@@ -1246,7 +1257,10 @@ export default function EpisodeBoard({ forceViewMode }) {
 
       {/* Right area */}
       {viewMode === 'bank' ? (
-        <ProposedBank episodes={episodes} onSelectSlide={handleBankSelect} />
+        <ProposedBank
+          episodes={episodes}
+          onSelectSlide={handleBankSelect}
+        />
       ) : (
         <div className="flex-1 flex flex-col">
           {/* Slide header */}

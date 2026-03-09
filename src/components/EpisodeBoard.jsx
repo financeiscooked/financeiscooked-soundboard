@@ -1308,30 +1308,31 @@ export default function EpisodeBoard({ forceViewMode }) {
                         {seg.slides.map((slide, sIdx) => {
                           const isActiveSlide = isActive && sIdx === activeSlideIdx
                           return (
-                            <button
-                              key={sIdx}
-                              onClick={() => jumpToSlide(idx, sIdx)}
-                              className={`w-full text-left pl-4 pr-3 py-1.5 text-[11px] transition-all flex items-center gap-1.5
-                                ${isActiveSlide
-                                  ? 'text-[var(--text-primary)] bg-[var(--bg-subtle)]'
-                                  : 'text-[var(--text-hint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
-                                }`}
-                            >
-                              <SlideTypeIcon type={slide.type} />
-                              <span className="truncate">{slide.title}</span>
-                            </button>
+                            <div key={sIdx}>
+                              <button
+                                onClick={() => jumpToSlide(idx, sIdx)}
+                                className={`w-full text-left pl-4 pr-3 py-1.5 text-[11px] transition-all flex items-center gap-1.5
+                                  ${isActiveSlide
+                                    ? 'text-[var(--text-primary)] bg-[var(--bg-subtle)]'
+                                    : 'text-[var(--text-hint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
+                                  }`}
+                              >
+                                <SlideTypeIcon type={slide.type} />
+                                <span className="truncate">{slide.title}</span>
+                              </button>
+                              {/* Per-slide action buttons (Prep/Show only) */}
+                              {(viewMode === 'prep' || viewMode === 'show') && slide.status !== 'final' && (
+                                <SidebarSegmentActions
+                                  viewMode={viewMode}
+                                  episodeId={episode?.id}
+                                  segmentId={seg.id}
+                                  segmentName={slide.title}
+                                />
+                              )}
+                            </div>
                           )
                         })}
                       </div>
-                    )}
-                    {/* Segment action buttons (Prep/Show only) */}
-                    {isExpanded && (viewMode === 'prep' || viewMode === 'show') && segStatus === 'proposed' && (
-                      <SidebarSegmentActions
-                        viewMode={viewMode}
-                        episodeId={episode?.id}
-                        segmentId={seg.id}
-                        segmentName={seg.name}
-                      />
                     )}
                   </div>
                 )

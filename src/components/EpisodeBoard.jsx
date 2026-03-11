@@ -23,6 +23,8 @@ import {
   X,
   Loader2,
   Send,
+  Lock,
+  Unlock,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -568,7 +570,7 @@ function ActionRow({ viewMode, sending, onAccept, onBacklog, onDelete, result, s
   )
 }
 
-function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes }) {
+function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes, isAdmin }) {
   const [sending, setSending] = useState(null)
   const [result, setResult] = useState(null)
   const [targetEp, setTargetEp] = useState(episode.id)
@@ -654,7 +656,7 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
         )}
       </button>
 
-      <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[var(--border-subtle)]">
+      {isAdmin && <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[var(--border-subtle)]">
         {showEpPicker && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[var(--text-muted)] text-xs">Assign to:</span>
@@ -689,12 +691,12 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
           targetEp={targetEp}
           acceptDisabled={showEpPicker && !targetEp}
         />
-      </div>
+      </div>}
     </div>
   )
 }
 
-function ProposedBank({ episodes, onSelectSlide }) {
+function ProposedBank({ episodes, onSelectSlide, isAdmin }) {
   const [allEpisodes, setAllEpisodes] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -777,6 +779,7 @@ function ProposedBank({ episodes, onSelectSlide }) {
                     slideIdx={slideIdx}
                     onSelectSlide={onSelectSlide}
                     allEpisodes={allEpisodes}
+                    isAdmin={isAdmin}
                   />
                 ))}
               </div>
@@ -812,6 +815,27 @@ export default function EpisodeBoard({ forceViewMode }) {
   const [defaultTimerSec, setDefaultTimerSec] = useState(90)
   const [perSegTimerSec, setPerSegTimerSec] = useState({}) // { [segId]: seconds }
   const [timerSettingsOpen, setTimerSettingsOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('fic-admin') === '1')
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false)
+  const [adminInput, setAdminInput] = useState('')
+  const [adminError, setAdminError] = useState(false)
+
+  const handleAdminSubmit = useCallback(() => {
+    if (adminInput === 'admin123') {
+      setIsAdmin(true)
+      sessionStorage.setItem('fic-admin', '1')
+      setShowAdminPrompt(false)
+      setAdminInput('')
+      setAdminError(false)
+    } else {
+      setAdminError(true)
+    }
+  }, [adminInput])
+
+  const handleAdminLogout = useCallback(() => {
+    setIsAdmin(false)
+    sessionStorage.removeItem('fic-admin')
+  }, [])
 
   const handleSetSegTimer = useCallback((segId, sec) => {
     setPerSegTimerSec((prev) => {
@@ -1218,6 +1242,28 @@ export default function EpisodeBoard({ forceViewMode }) {
               </button>
             ))}
           </div>
+          {/* Admin lock/unlock */}
+          <div className="flex items-center justify-end mt-2 px-1">
+            {isAdmin ? (
+              <button
+                onClick={handleAdminLogout}
+                className="flex items-center gap-1 text-[10px] text-emerald-400 hover:text-emerald-300 transition-colors"
+                title="Admin mode active — click to lock"
+              >
+                <Unlock size={10} />
+                <span className="font-bold uppercase tracking-wider">Admin</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => { setShowAdminPrompt(true); setAdminError(false); setAdminInput('') }}
+                className="flex items-center gap-1 text-[10px] text-[var(--text-hint)] hover:text-[var(--text-muted)] transition-colors"
+                title="Unlock admin actions"
+              >
+                <Lock size={10} />
+                <span className="uppercase tracking-wider">Admin</span>
+              </button>
+            )}
+          </div>
           {/* Status counts */}
           {viewMode !== 'bank' && (
             <div className="flex items-center gap-3 mt-2 px-1">
@@ -1320,8 +1366,8 @@ export default function EpisodeBoard({ forceViewMode }) {
                                 <SlideTypeIcon type={slide.type} />
                                 <span className="truncate">{slide.title}</span>
                               </button>
-                              {/* Per-slide action buttons (Prep/Show only) */}
-                              {(viewMode === 'prep' || viewMode === 'show') && slide.status !== 'final' && (
+                              {/* Per-slide action buttons (Prep/Show only, admin only) */}
+                              {isAdmin && (viewMode === 'prep' || viewMode === 'show') && slide.status !== 'final' && (
                                 <SidebarSegmentActions
                                   viewMode={viewMode}
                                   episodeId={episode?.id}
@@ -1357,6 +1403,7 @@ export default function EpisodeBoard({ forceViewMode }) {
         <ProposedBank
           episodes={episodes}
           onSelectSlide={handleBankSelect}
+          isAdmin={isAdmin}
         />
       ) : (
         <div className="flex-1 flex flex-col">
@@ -1455,6 +1502,45 @@ export default function EpisodeBoard({ forceViewMode }) {
               Next
               <ChevronRight size={16} />
             </button>
+          </div>
+        </div>
+      )}
+      {/* Admin password modal */}
+      {showAdminPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-2xl p-6 w-80 shadow-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Lock size={16} className="text-[var(--text-muted)]" />
+              <h3 className="text-[var(--text-primary)] font-bold text-sm">Admin Access</h3>
+            </div>
+            <input
+              type="password"
+              value={adminInput}
+              onChange={(e) => { setAdminInput(e.target.value); setAdminError(false) }}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdminSubmit()}
+              placeholder="Enter password"
+              autoFocus
+              className={`w-full px-3 py-2 rounded-lg text-sm bg-[var(--bg-subtle)] border text-[var(--text-primary)] outline-none placeholder:text-[var(--text-hint)] ${
+                adminError ? 'border-red-500/50' : 'border-[var(--border-default)]'
+              }`}
+            />
+            {adminError && (
+              <p className="text-red-400 text-xs mt-1.5">Incorrect password</p>
+            )}
+            <div className="flex items-center gap-2 mt-4">
+              <button
+                onClick={handleAdminSubmit}
+                className="flex-1 px-3 py-2 rounded-lg text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/25 transition-all"
+              >
+                Unlock
+              </button>
+              <button
+                onClick={() => { setShowAdminPrompt(false); setAdminInput(''); setAdminError(false) }}
+                className="flex-1 px-3 py-2 rounded-lg text-xs font-bold bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border-subtle)] hover:text-[var(--text-secondary)] transition-all"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

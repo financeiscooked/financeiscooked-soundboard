@@ -7,9 +7,9 @@ import { useTheme } from './ThemeContext'
 import Toast from './components/Toast'
 
 const TABS = [
+  { id: 'episodes', label: 'Episodes', icon: Tv },
   { id: 'sounds', label: 'Soundboard', icon: Volume2 },
   { id: 'memes', label: 'Meme Board', icon: Image },
-  { id: 'episodes', label: 'Episodes', icon: Tv },
 ]
 
 // Check if launched in pop-out live mode via ?mode=live
@@ -22,7 +22,7 @@ function useIsPopout() {
 
 export default function App() {
   const isPopout = useIsPopout()
-  const [activeTab, setActiveTab] = useState(isPopout ? 'episodes' : 'sounds')
+  const [activeTab, setActiveTab] = useState('episodes')
   const { theme, toggleTheme } = useTheme()
 
   // Pop-out mode: just the EpisodeBoard, no header/tabs

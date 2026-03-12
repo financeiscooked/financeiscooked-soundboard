@@ -25,6 +25,8 @@ import {
   Send,
   Lock,
   Unlock,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react'
 
 function DetailsExpander({ details }) {
@@ -570,7 +572,36 @@ function ActionRow({ viewMode, sending, onAccept, onBacklog, onDelete, result, s
   )
 }
 
-function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes, isAdmin }) {
+function VoteButtons({ voteKey, votes, onVote }) {
+  const counts = votes[voteKey] || { up: 0, down: 0 }
+  const net = counts.up - counts.down
+
+  return (
+    <div className="flex items-center gap-1">
+      <button
+        onClick={(e) => { e.stopPropagation(); onVote(voteKey, 'up') }}
+        className="p-1 rounded hover:bg-emerald-500/15 text-[var(--text-hint)] hover:text-emerald-400 transition-all"
+        title="Upvote"
+      >
+        <ThumbsUp size={12} />
+      </button>
+      <span className={`text-[11px] font-bold min-w-[18px] text-center ${
+        net > 0 ? 'text-emerald-400' : net < 0 ? 'text-red-400' : 'text-[var(--text-hint)]'
+      }`}>
+        {net > 0 ? `+${net}` : net}
+      </span>
+      <button
+        onClick={(e) => { e.stopPropagation(); onVote(voteKey, 'down') }}
+        className="p-1 rounded hover:bg-red-500/15 text-[var(--text-hint)] hover:text-red-400 transition-all"
+        title="Downvote"
+      >
+        <ThumbsDown size={12} />
+      </button>
+    </div>
+  )
+}
+
+function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, allEpisodes, isAdmin, votes, onVote }) {
   const [sending, setSending] = useState(null)
   const [result, setResult] = useState(null)
   const [targetEp, setTargetEp] = useState(episode.id)
@@ -656,6 +687,14 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
         )}
       </button>
 
+      <div className="flex items-center gap-2 mt-2 pl-1">
+        <VoteButtons
+          voteKey={`${episode.id}:${segment.id}:${slideIdx}`}
+          votes={votes}
+          onVote={onVote}
+        />
+      </div>
+
       {isAdmin && <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[var(--border-subtle)]">
         {showEpPicker && (
           <div className="flex items-center gap-2 flex-wrap">
@@ -699,6 +738,7 @@ function ProposedSlideCard({ episode, segment, slide, slideIdx, onSelectSlide, a
 function ProposedBank({ episodes, onSelectSlide, isAdmin }) {
   const [allEpisodes, setAllEpisodes] = useState([])
   const [loading, setLoading] = useState(true)
+  const [votes, setVotes] = useState({})
 
   useEffect(() => {
     if (episodes.length === 0) return
@@ -714,6 +754,43 @@ function ProposedBank({ episodes, onSelectSlide, isAdmin }) {
       setLoading(false)
     })
   }, [episodes])
+
+  // Fetch all votes once episodes are loaded
+  useEffect(() => {
+    if (allEpisodes.length === 0) return
+    Promise.all(
+      allEpisodes.map((ep) =>
+        fetch(`/.netlify/functions/vote?prefix=${ep.id}`)
+          .then((r) => r.json())
+          .catch(() => ({}))
+      )
+    ).then((results) => {
+      const merged = {}
+      for (const r of results) Object.assign(merged, r)
+      setVotes(merged)
+    })
+  }, [allEpisodes])
+
+  const handleVote = useCallback(async (key, direction) => {
+    // Optimistic update
+    setVotes((prev) => {
+      const current = prev[key] || { up: 0, down: 0 }
+      return { ...prev, [key]: { ...current, [direction]: current[direction] + 1 } }
+    })
+    try {
+      const res = await fetch('/.netlify/functions/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, direction }),
+      })
+      const data = await res.json()
+      if (data.votes) {
+        setVotes((prev) => ({ ...prev, [key]: data.votes }))
+      }
+    } catch (err) {
+      console.error('Vote failed:', err)
+    }
+  }, [])
 
   // Collect all proposed segments that have slides, grouped by episode
   const proposedGroups = useMemo(() => {
@@ -780,6 +857,8 @@ function ProposedBank({ episodes, onSelectSlide, isAdmin }) {
                     onSelectSlide={onSelectSlide}
                     allEpisodes={allEpisodes}
                     isAdmin={isAdmin}
+                    votes={votes}
+                    onVote={handleVote}
                   />
                 ))}
               </div>

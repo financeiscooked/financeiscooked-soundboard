@@ -70,27 +70,13 @@
           "title": "Here's What Happened in AI in February",
           "url": "https://www.linkedin.com/posts/alyona-mysko_heres-what-happened-in-ai-in-february-that-activity-7434271268188635136-jZlh",
           "notes": "LinkedIn roundup by Alyona Mysko summarizing the biggest AI developments from February 2026. Great overview post to reference for the show.",
-          "status": "final"
+          "status": "proposed"
         },
         {
           "type": "link",
           "title": "Every Company Will Have an Internal Agent Builder",
           "url": "https://www.linkedin.com/feed/update/urn:li:activity:7435006276461531137/",
           "notes": "Key prediction: 'Within a year, every company over 50 people will have at least one person whose full-time job is building internal agents.' Huge implications for finance & accounting teams — the rise of the internal agent builder role.",
-          "status": "final"
-        },
-        {
-          "type": "link",
-          "title": "Founder Says AI Tax Engines Don't Solve Everything — Give It a Month",
-          "url": "https://www.linkedin.com/posts/innovationforall_ai-tax-engines-are-great-but-it-doesnt-solve-activity-7435047671578378240-4BBb",
-          "notes": "A founder argues AI tax engines are great but don't solve the full problem. The show angle: what they're saying AI can't do today is probably a month away from being solved. Perfect example of underestimating the pace of AI progress in finance.",
-          "status": "proposed"
-        },
-        {
-          "type": "link",
-          "title": "NYT Sends Autonomous Agent Reporter Into Moltbook",
-          "url": "",
-          "notes": "The New York Times deployed an autonomous AI agent as a reporter into Moltbook to report on it. Massive signal — legacy media is now using AI agents for journalism. Raises questions about AI-generated reporting, trust, and what happens when autonomous agents are the ones gathering and writing the news.",
           "status": "proposed"
         },
         {

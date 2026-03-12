@@ -13,7 +13,14 @@
       "id": "app-of-the-show",
       "name": "App of the Show",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "topic",
+          "title": "Claude Skills Introduction",
+          "notes": "Overview of Claude Skills and key use cases for finance & accounting: CSV import and data processing, automated testing, building apps and tools, workflow automation, and more.",
+          "status": "proposed"
+        }
+      ]
     },
     {
       "id": "in-the-news",

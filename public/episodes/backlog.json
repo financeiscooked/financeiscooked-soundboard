@@ -36,6 +36,13 @@
         },
         {
           "type": "link",
+          "title": "Crypto.com Announces OpenClaw API Integration",
+          "url": "",
+          "notes": "Crypto.com announced an integration with the OpenClaw API — details on what this means for crypto infrastructure and developer access. Link TBD.",
+          "status": "proposed"
+        },
+        {
+          "type": "link",
           "title": "AI Can't Do Transfer Pricing?",
           "url": "https://www.linkedin.com/posts/secret-cfo_psa-please-dont-hack-a-transfer-pricing-activity-7432798007538135040-Nryw",
           "notes": "Secret CFO post — PSA on why you shouldn't hack transfer pricing with AI. Transfer pricing is one of those areas where AI oversimplification could create serious compliance and regulatory risk.",

@@ -17,7 +17,6 @@ import {
   RotateCcw,
   Info,
   Timer,
-  Settings,
   ExternalLink,
   Check,
   X,
@@ -58,63 +57,67 @@ const VIEW_MODES = [
   { id: 'live', label: 'Live', description: 'PTI-style rundown for on-air' },
 ]
 
-// Duration presets for per-segment timer picker
-const TIMER_PRESETS = [30, 60, 90, 120, 180, 300]
+// PTI-style Live rundown — show timer + per-segment elapsed time tracking
+function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, formatTimer: fmt }) {
+  // Show timer — counts up from when you hit play
+  const [showRunning, setShowRunning] = useState(false)
+  const [showElapsed, setShowElapsed] = useState(0)
+  const showStartRef = useRef(null)
+  const showIntervalRef = useRef(null)
 
-// PTI-style Live rundown — topic list with expandable slides and per-segment timer memory
-function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, defaultTimerSec, perSegTimerSec, onSetSegTimer, formatTimer: fmt }) {
-  // Per-segment timer memory: { [segIdx]: { elapsed: ms, running: bool } }
-  const [segTimers, setSegTimers] = useState({})
-  const timerInterval = useRef(null)
-  const timerStartRef = useRef(null)
+  // Per-segment accumulated time: { [segIdx]: ms }
+  const [segElapsed, setSegElapsed] = useState({})
+  const segStartRef = useRef(null)
+  const segIntervalRef = useRef(null)
+  const prevSegRef = useRef(activeSegmentIdx)
+
   const [expandedLiveSegs, setExpandedLiveSegs] = useState(new Set())
-  const [editingTimerSeg, setEditingTimerSeg] = useState(null) // seg.id currently being edited
 
-  // Get duration for a specific segment
-  const getSegDuration = (segId) => perSegTimerSec[segId] || defaultTimerSec
-
-  // Get current segment's timer state
-  const currentTimer = segTimers[activeSegmentIdx] || { elapsed: 0, running: false }
-  const isRunning = currentTimer.running
-  const currentDuration = getSegDuration(segments[activeSegmentIdx]?.id)
-
-  // Run the active timer
+  // Show timer tick
   useEffect(() => {
-    if (isRunning) {
-      timerStartRef.current = Date.now() - currentTimer.elapsed
-      timerInterval.current = setInterval(() => {
-        setSegTimers((prev) => ({
+    if (showRunning) {
+      showStartRef.current = Date.now() - showElapsed
+      showIntervalRef.current = setInterval(() => {
+        setShowElapsed(Date.now() - showStartRef.current)
+      }, 100)
+    } else {
+      if (showIntervalRef.current) clearInterval(showIntervalRef.current)
+    }
+    return () => { if (showIntervalRef.current) clearInterval(showIntervalRef.current) }
+  }, [showRunning])
+
+  // Segment timer — runs while show is running, accumulates per active segment
+  useEffect(() => {
+    if (showRunning) {
+      segStartRef.current = Date.now()
+      segIntervalRef.current = setInterval(() => {
+        const now = Date.now()
+        const delta = now - segStartRef.current
+        segStartRef.current = now
+        setSegElapsed((prev) => ({
           ...prev,
-          [activeSegmentIdx]: {
-            ...prev[activeSegmentIdx],
-            elapsed: Date.now() - timerStartRef.current,
-          },
+          [activeSegmentIdx]: (prev[activeSegmentIdx] || 0) + delta,
         }))
       }, 100)
-    } else if (timerInterval.current) {
-      clearInterval(timerInterval.current)
-      timerInterval.current = null
+    } else {
+      if (segIntervalRef.current) clearInterval(segIntervalRef.current)
     }
-    return () => {
-      if (timerInterval.current) clearInterval(timerInterval.current)
+    return () => { if (segIntervalRef.current) clearInterval(segIntervalRef.current) }
+  }, [showRunning, activeSegmentIdx])
+
+  // When switching segments, restart the segment interval cleanly
+  useEffect(() => {
+    if (prevSegRef.current !== activeSegmentIdx) {
+      segStartRef.current = Date.now()
+      prevSegRef.current = activeSegmentIdx
     }
-  }, [isRunning, activeSegmentIdx])
+  }, [activeSegmentIdx])
 
-  const toggleCurrentTimer = () => {
-    setSegTimers((prev) => ({
-      ...prev,
-      [activeSegmentIdx]: {
-        elapsed: (prev[activeSegmentIdx] || { elapsed: 0 }).elapsed,
-        running: !(prev[activeSegmentIdx] || { running: false }).running,
-      },
-    }))
-  }
-
-  const resetCurrentTimer = () => {
-    setSegTimers((prev) => ({
-      ...prev,
-      [activeSegmentIdx]: { elapsed: 0, running: false },
-    }))
+  const toggleShow = () => setShowRunning((v) => !v)
+  const resetShow = () => {
+    setShowRunning(false)
+    setShowElapsed(0)
+    setSegElapsed({})
   }
 
   const toggleExpanded = (segId) => {
@@ -126,57 +129,42 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, d
     })
   }
 
-  const remainingMs = Math.max(0, (currentDuration * 1000) - currentTimer.elapsed)
-  const isOvertime = currentTimer.elapsed > currentDuration * 1000
-  const overtimeMs = currentTimer.elapsed - currentDuration * 1000
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Timer bar */}
-      {showTimer && (
-        <div className={`px-6 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between
-          ${isOvertime ? 'bg-red-500/10' : ''}`}
-        >
-          <div className="flex items-center gap-3">
-            <Timer size={16} className={isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-muted)]'} />
-            <span className="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold">
-              {segments[activeSegmentIdx]?.name || 'Segment Timer'}
-            </span>
-            <span className="text-[var(--text-hint)] text-[10px] font-mono">
-              ({currentDuration}s)
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className={`font-mono text-2xl font-bold ${isOvertime ? 'text-[#D94E2A]' : 'text-[var(--text-primary)]'}`}>
-              {isOvertime ? `+${fmt(overtimeMs)}` : fmt(remainingMs)}
-            </span>
-            <button
-              onClick={toggleCurrentTimer}
-              className={`p-1.5 rounded-lg transition-all ${isRunning ? 'bg-red-500/15 text-[#D94E2A]' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
-            >
-              {isRunning ? <Pause size={16} /> : <Play size={16} />}
-            </button>
-            <button
-              onClick={resetCurrentTimer}
-              className="p-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all"
-            >
-              <RotateCcw size={16} />
-            </button>
-          </div>
+      {/* Show timer bar */}
+      <div className="px-6 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Timer size={18} className="text-[#D94E2A]" />
+          <span className="text-[var(--text-muted)] text-xs uppercase tracking-wider font-bold">
+            Show Timer
+          </span>
         </div>
-      )}
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-3xl font-bold text-[var(--text-primary)]">
+            {fmt(showElapsed)}
+          </span>
+          <button
+            onClick={toggleShow}
+            className={`p-2 rounded-lg transition-all ${showRunning ? 'bg-red-500/15 text-[#D94E2A]' : 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'}`}
+          >
+            {showRunning ? <Pause size={18} /> : <Play size={18} />}
+          </button>
+          <button
+            onClick={resetShow}
+            className="p-2 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all"
+          >
+            <RotateCcw size={18} />
+          </button>
+        </div>
+      </div>
 
-      {/* Segment list — full width PTI rundown */}
+      {/* Segment list */}
       <div className="flex-1 overflow-y-auto">
         {segments.map((seg, idx) => {
           const isActive = idx === activeSegmentIdx
           const isPast = idx < activeSegmentIdx
           const isExpanded = expandedLiveSegs.has(seg.id)
-          const segElapsed = (segTimers[idx] || { elapsed: 0 }).elapsed
-          const segDuration = getSegDuration(seg.id)
-          const segOver = segElapsed > segDuration * 1000
-          const isEditingTimer = editingTimerSeg === seg.id
-          const hasCustomTime = seg.id in perSegTimerSec
+          const elapsed = segElapsed[idx] || 0
           return (
             <div key={seg.id}>
               <div
@@ -225,65 +213,21 @@ function LiveRundown({ segments, activeSegmentIdx, onJumpToSegment, showTimer, d
                   {seg.name}
                 </button>
 
-                {/* Per-segment duration badge (clickable to edit) */}
-                {showTimer && (
-                  <div className="relative flex-shrink-0">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setEditingTimerSeg(isEditingTimer ? null : seg.id) }}
-                      className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold transition-all
-                        ${hasCustomTime
-                          ? 'bg-[#F0A030]/15 text-[#F0A030] hover:bg-[#F0A030]/25'
-                          : 'bg-[var(--bg-subtle)] text-[var(--text-hint)] hover:text-[var(--text-muted)]'
-                        }`}
-                      title={`${segDuration}s — click to change`}
-                    >
-                      {segDuration}s
-                    </button>
-                    {isEditingTimer && (
-                      <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-30 p-2 w-44"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="text-[9px] text-[var(--text-muted)] uppercase tracking-wider font-bold mb-1.5 px-1">
-                          Duration for {seg.name}
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {TIMER_PRESETS.map((sec) => (
-                            <button
-                              key={sec}
-                              onClick={() => { onSetSegTimer(seg.id, sec); setEditingTimerSeg(null) }}
-                              className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition-all
-                                ${segDuration === sec
-                                  ? 'bg-[#D94E2A]/20 text-[#D94E2A]'
-                                  : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                                }`}
-                            >
-                              {sec >= 60 ? `${sec / 60}m` : `${sec}s`}
-                            </button>
-                          ))}
-                        </div>
-                        {hasCustomTime && (
-                          <button
-                            onClick={() => { onSetSegTimer(seg.id, null); setEditingTimerSeg(null) }}
-                            className="w-full mt-1.5 px-2 py-1 rounded text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] transition-all"
-                          >
-                            Reset to default ({defaultTimerSec}s)
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Per-segment elapsed time (small, for past/paused segments) */}
-                {showTimer && segElapsed > 0 && !isActive && (
-                  <span className={`text-xs font-mono ${segOver ? 'text-[#D94E2A]/60' : 'text-[var(--text-hint)]'}`}>
-                    {fmt(segElapsed)}
+                {/* Per-segment elapsed time */}
+                {elapsed > 0 && (
+                  <span className={`text-xs font-mono flex-shrink-0 ${isActive ? 'text-[#D94E2A]' : 'text-[var(--text-hint)]'}`}>
+                    {fmt(elapsed)}
                   </span>
                 )}
 
                 {/* Active indicator */}
-                {isActive && (
+                {isActive && showRunning && (
                   <span className="text-[#D94E2A] text-xs font-bold uppercase tracking-widest animate-pulse">
+                    LIVE
+                  </span>
+                )}
+                {isActive && !showRunning && (
+                  <span className="text-[var(--text-hint)] text-xs font-bold uppercase tracking-widest">
                     NOW
                   </span>
                 )}
@@ -890,10 +834,6 @@ export default function EpisodeBoard({ forceViewMode }) {
     )
   }, [])
   const [expandedSegments, setExpandedSegments] = useState(new Set())
-  const [showSegTimer, setShowSegTimer] = useState(true)
-  const [defaultTimerSec, setDefaultTimerSec] = useState(90)
-  const [perSegTimerSec, setPerSegTimerSec] = useState({}) // { [segId]: seconds }
-  const [timerSettingsOpen, setTimerSettingsOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('fic-admin') === '1')
   const [showAdminPrompt, setShowAdminPrompt] = useState(false)
   const [adminInput, setAdminInput] = useState('')
@@ -916,16 +856,6 @@ export default function EpisodeBoard({ forceViewMode }) {
     sessionStorage.removeItem('fic-admin')
   }, [])
 
-  const handleSetSegTimer = useCallback((segId, sec) => {
-    setPerSegTimerSec((prev) => {
-      if (sec === null) {
-        const next = { ...prev }
-        delete next[segId]
-        return next
-      }
-      return { ...prev, [segId]: sec }
-    })
-  }, [])
 
   // Show timer
   const [timerRunning, setTimerRunning] = useState(false)
@@ -1187,84 +1117,23 @@ export default function EpisodeBoard({ forceViewMode }) {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Timer toggle */}
+          {/* Pop-out button */}
+          {!forceViewMode && (
             <button
-              onClick={() => setShowSegTimer((v) => !v)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all
-                ${showSegTimer
-                  ? 'bg-[#D94E2A]/15 text-[#D94E2A]'
-                  : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-                }`}
+              onClick={popOutLive}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-bold transition-all"
+              title="Pop out Live rundown in a narrow window"
             >
-              <Timer size={12} />
-              Timer {showSegTimer ? 'ON' : 'OFF'}
+              <ExternalLink size={12} />
+              Pop Out
             </button>
-            {/* Default timer duration setting */}
-            {showSegTimer && (
-              <div className="relative">
-                <button
-                  onClick={() => setTimerSettingsOpen((v) => !v)}
-                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-mono transition-all"
-                  title="Default duration — click each segment's time badge to customize individually"
-                >
-                  <Settings size={11} />
-                  Default {defaultTimerSec}s
-                </button>
-                {timerSettingsOpen && (
-                  <div className="absolute top-full right-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg shadow-2xl z-20 p-3 w-48">
-                    <label className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-bold block mb-2">
-                      Default seconds per segment
-                    </label>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {TIMER_PRESETS.map((sec) => (
-                        <button
-                          key={sec}
-                          onClick={() => { setDefaultTimerSec(sec); setTimerSettingsOpen(false) }}
-                          className={`px-2 py-1 rounded text-xs font-mono font-bold transition-all
-                            ${defaultTimerSec === sec
-                              ? 'bg-[#D94E2A]/20 text-[#D94E2A]'
-                              : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                            }`}
-                        >
-                          {sec >= 60 ? `${sec / 60}m` : `${sec}s`}
-                        </button>
-                      ))}
-                    </div>
-                    {Object.keys(perSegTimerSec).length > 0 && (
-                      <button
-                        onClick={() => { setPerSegTimerSec({}); setTimerSettingsOpen(false) }}
-                        className="w-full mt-2 px-2 py-1 rounded text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-hover)] transition-all"
-                      >
-                        Clear all custom times
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-            {/* Pop-out button */}
-            {!forceViewMode && (
-              <button
-                onClick={popOutLive}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xs font-bold transition-all"
-                title="Pop out Live rundown in a narrow window"
-              >
-                <ExternalLink size={12} />
-                Pop Out
-              </button>
-            )}
-          </div>
+          )}
         </div>
 
         <LiveRundown
           segments={segments}
           activeSegmentIdx={safeSegIdx}
           onJumpToSegment={jumpToSegment}
-          showTimer={showSegTimer}
-          defaultTimerSec={defaultTimerSec}
-          perSegTimerSec={perSegTimerSec}
-          onSetSegTimer={handleSetSegTimer}
           formatTimer={formatTimer}
         />
       </div>

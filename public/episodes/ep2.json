@@ -156,8 +156,16 @@
     {
       "id": "outtro",
       "name": "Outtro",
-      "status": "proposed",
-      "slides": []
+      "status": "final",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Thank you!!!",
+          "bullets": [],
+          "notes": "",
+          "status": "final"
+        }
+      ]
     },
     {
       "id": "ai-and-crypto",
@@ -168,8 +176,24 @@
     {
       "id": "coming-soon",
       "name": "Coming Soon",
-      "status": "proposed",
-      "slides": []
+      "status": "final",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Coming Soon",
+          "bullets": [
+            "Claude Skills",
+            "Claude Cowork",
+            "AI and Crypto",
+            "Our First Guest!!",
+            "Cool Things",
+            "Apps Apps Apps",
+            "TheFinanceSetup"
+          ],
+          "notes": "",
+          "status": "final"
+        }
+      ]
     }
   ]
 }

@@ -40,6 +40,20 @@
       "slides": []
     },
     {
+      "id": "finance-people-doing-stuff",
+      "name": "Finance People Doing Stuff",
+      "status": "proposed",
+      "slides": [
+        {
+          "type": "link",
+          "title": "Replit Controller Builds Accounting Close Tool",
+          "url": "https://www.linkedin.com/posts/mohamedalsabawi_i-built-a-custom-accounting-close-tool-yesterday-activity-7437534992072646656-m51W",
+          "notes": "Mohamed Alsabawi built a custom accounting close tool using Replit's controller agent. Shows how non-engineers can now build real accounting workflow tools with AI-powered development platforms.",
+          "status": "proposed"
+        }
+      ]
+    },
+    {
       "id": "outtro",
       "name": "Outtro",
       "status": "proposed",

@@ -159,6 +159,13 @@
       "status": "proposed",
       "slides": [
         {
+          "type": "link",
+          "title": "AI Agents Using Crypto for Payments",
+          "url": "https://x.com/peterschroederr/status/2029567709290353096",
+          "notes": "AI agents are starting to use crypto rails for payments — the intersection of autonomous agents and decentralized finance. How crypto solves the payments problem for AI agents that need to transact without human intervention.",
+          "status": "proposed"
+        },
+        {
           "type": "text",
           "title": "Crypto Wasn't Made for Humans — It Was Made for AI",
           "bullets": [

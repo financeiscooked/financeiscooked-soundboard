@@ -24,7 +24,19 @@
       "id": "app-of-the-show",
       "name": "App of the Show",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "text",
+          "title": "Notion Walkthrough",
+          "bullets": [
+            "Live walkthrough of Notion",
+            "Key features and workflows for finance & accounting teams",
+            "How Notion fits into the AI-powered productivity stack"
+          ],
+          "notes": "App of the Show segment — walk through Notion live, highlighting features relevant to finance and accounting professionals.",
+          "status": "proposed"
+        }
+      ]
     },
     {
       "id": "in-the-news",

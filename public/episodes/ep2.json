@@ -123,8 +123,23 @@
     {
       "id": "take-of-the-show",
       "name": "Take of the Show",
-      "status": "proposed",
-      "slides": []
+      "status": "final",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Joe's Take: SaaS is Not Dead",
+          "bullets": [],
+          "notes": "",
+          "status": "final"
+        },
+        {
+          "type": "text",
+          "title": "Ore's Take: Agent Platforms Everywhere",
+          "bullets": [],
+          "notes": "",
+          "status": "final"
+        }
+      ]
     },
     {
       "id": "one-thing-ai",

@@ -128,15 +128,27 @@
         {
           "type": "text",
           "title": "Joe's Take: SaaS is Not Dead",
-          "bullets": [],
-          "notes": "",
+          "bullets": [
+            "SaaS isn't dying — it's evolving",
+            "AI doesn't replace SaaS, it makes SaaS better",
+            "Every major SaaS platform is adding AI agents, not getting replaced by them",
+            "The subscription model still works — usage-based pricing is just a pricing change, not a death sentence",
+            "Enterprise buyers still want platforms, not a pile of AI scripts"
+          ],
+          "notes": "Joe's argument: the 'SaaS is dead' narrative is overblown. AI is a feature layer on top of SaaS, not a replacement. Companies still need structured platforms with security, compliance, audit trails, and team collaboration — things agents alone don't solve.",
           "status": "final"
         },
         {
           "type": "text",
           "title": "Ore's Take: Agent Platforms Everywhere",
-          "bullets": [],
-          "notes": "",
+          "bullets": [
+            "Every company will have an internal agent platform within 2 years",
+            "FloQast, Notion, Replit — everyone is shipping agent builders",
+            "The new hire isn't a person, it's an agent that runs 24/7",
+            "Finance teams will manage agent fleets the way they manage headcount",
+            "The question isn't IF agents are coming — it's who builds them first"
+          ],
+          "notes": "Ore's argument: we're entering the age of agent platforms. It's not about one AI tool — it's about platforms that let you build, deploy, and manage agents across your entire operation. Finance teams that build agents now will have a massive advantage.",
           "status": "final"
         }
       ]

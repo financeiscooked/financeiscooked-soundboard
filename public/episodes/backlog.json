@@ -29,27 +29,6 @@
         },
         {
           "type": "link",
-          "title": "Running Open Source Models on iPhone 17",
-          "url": "https://x.com/adrgrondin/status/2028568689709084919",
-          "notes": "Post by @adrgrondin showing open source AI models running locally on iPhone 17 hardware. Huge implications for on-device AI — no cloud dependency, privacy-first, accessible to everyone.",
-          "status": "proposed"
-        },
-        {
-          "type": "link",
-          "title": "Crypto.com Announces OpenClaw API Integration",
-          "url": "",
-          "notes": "Crypto.com announced an integration with the OpenClaw API — details on what this means for crypto infrastructure and developer access. Link TBD.",
-          "status": "proposed"
-        },
-        {
-          "type": "link",
-          "title": "NYT Sends Autonomous Agent Reporter Into Moltbook",
-          "url": "",
-          "notes": "The New York Times deployed an autonomous AI agent as a reporter into Moltbook to report on it. Massive signal — legacy media is now using AI agents for journalism. Raises questions about AI-generated reporting, trust, and what happens when autonomous agents are the ones gathering and writing the news.",
-          "status": "proposed"
-        },
-        {
-          "type": "link",
           "title": "AI Can't Do Transfer Pricing?",
           "url": "https://www.linkedin.com/posts/secret-cfo_psa-please-dont-hack-a-transfer-pricing-activity-7432798007538135040-Nryw",
           "notes": "Secret CFO post — PSA on why you shouldn't hack transfer pricing with AI. Transfer pricing is one of those areas where AI oversimplification could create serious compliance and regulatory risk.",
@@ -57,9 +36,30 @@
         },
         {
           "type": "link",
+          "title": "Running Open Source Models on iPhone 17",
+          "url": "",
+          "notes": "Moved from EP2 in-the-news to backlog.",
+          "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "Crypto.com Announces OpenClaw API Integration",
+          "url": "",
+          "notes": "Moved from EP2 in-the-news to backlog.",
+          "status": "proposed"
+        },
+        {
+          "type": "link",
           "title": "Founder Says AI Tax Engines Don't Solve Everything — Give It a Month",
-          "url": "https://www.linkedin.com/posts/innovationforall_ai-tax-engines-are-great-but-it-doesnt-solve-activity-7435047671578378240-4BBb",
-          "notes": "A founder argues AI tax engines are great but don't solve the full problem. The show angle: what they're saying AI can't do today is probably a month away from being solved. Perfect example of underestimating the pace of AI progress in finance.",
+          "url": "",
+          "notes": "Moved from EP2 in-the-news to backlog.",
+          "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "NYT Sends Autonomous Agent Reporter Into Moltbook",
+          "url": "",
+          "notes": "Moved from EP2 in-the-news to backlog.",
           "status": "proposed"
         }
       ]

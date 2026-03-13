@@ -13,7 +13,19 @@
       "id": "app-of-the-show",
       "name": "App of the Show",
       "status": "proposed",
-      "slides": []
+      "slides": [
+        {
+          "type": "text",
+          "title": "Notion Walkthrough",
+          "bullets": [
+            "Live walkthrough of Notion",
+            "Key features and workflows for finance & accounting teams",
+            "How Notion fits into the AI-powered productivity stack"
+          ],
+          "notes": "App of the Show segment — walk through Notion live, highlighting features relevant to finance and accounting professionals.",
+          "status": "proposed"
+        }
+      ]
     },
     {
       "id": "in-the-news",
@@ -60,6 +72,13 @@
           "title": "NYT Sends Autonomous Agent Reporter Into Moltbook",
           "url": "",
           "notes": "Moved from EP2 in-the-news to backlog.",
+          "status": "proposed"
+        },
+        {
+          "type": "link",
+          "title": "Replit Controller Builds Accounting Close Tool",
+          "url": "https://www.linkedin.com/posts/mohamedalsabawi_i-built-a-custom-accounting-close-tool-yesterday-activity-7437534992072646656-m51W",
+          "notes": "Mohamed Alsabawi built a custom accounting close tool using Replit's controller agent. Shows how non-engineers can now build real accounting workflow tools with AI-powered development platforms.",
           "status": "proposed"
         }
       ]

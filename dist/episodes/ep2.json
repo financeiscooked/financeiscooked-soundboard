@@ -21,27 +21,9 @@
       ]
     },
     {
-      "id": "app-of-the-show",
-      "name": "App of the Show",
-      "status": "proposed",
-      "slides": [
-        {
-          "type": "text",
-          "title": "Notion Walkthrough",
-          "bullets": [
-            "Live walkthrough of Notion",
-            "Key features and workflows for finance & accounting teams",
-            "How Notion fits into the AI-powered productivity stack"
-          ],
-          "notes": "App of the Show segment — walk through Notion live, highlighting features relevant to finance and accounting professionals.",
-          "status": "proposed"
-        }
-      ]
-    },
-    {
       "id": "in-the-news",
       "name": "In the News Updates",
-      "status": "proposed",
+      "status": "final",
       "slides": [
         {
           "type": "link",
@@ -78,13 +60,6 @@
           "url": "https://www.linkedin.com/feed/update/urn:li:activity:7435006276461531137/",
           "notes": "Key prediction: 'Within a year, every company over 50 people will have at least one person whose full-time job is building internal agents.' Huge implications for finance & accounting teams — the rise of the internal agent builder role.",
           "status": "final"
-        },
-        {
-          "type": "link",
-          "title": "Replit Controller Builds Accounting Close Tool",
-          "url": "https://www.linkedin.com/posts/mohamedalsabawi_i-built-a-custom-accounting-close-tool-yesterday-activity-7437534992072646656-m51W",
-          "notes": "Mohamed Alsabawi built a custom accounting close tool using Replit's controller agent. Shows how non-engineers can now build real accounting workflow tools with AI-powered development platforms.",
-          "status": "proposed"
         },
         {
           "type": "link",
@@ -128,13 +103,39 @@
         {
           "type": "text",
           "title": "Joe's Take: SaaS is Not Dead",
-          "bullets": [],
-          "notes": "",
+          "bullets": [
+            "SaaS isn't dying — it's evolving",
+            "AI doesn't replace SaaS, it makes SaaS better",
+            "Every major SaaS platform is adding AI agents, not getting replaced by them",
+            "The subscription model still works — usage-based pricing is just a pricing change, not a death sentence",
+            "Enterprise buyers still want platforms, not a pile of AI scripts"
+          ],
+          "notes": "Joe's argument: the 'SaaS is dead' narrative is overblown. AI is a feature layer on top of SaaS, not a replacement. Companies still need structured platforms with security, compliance, audit trails, and team collaboration — things agents alone don't solve.",
           "status": "final"
         },
         {
           "type": "text",
           "title": "Ore's Take: Agent Platforms Everywhere",
+          "bullets": [
+            "Every company will have an internal agent platform within 2 years",
+            "FloQast, Notion, Replit — everyone is shipping agent builders",
+            "The new hire isn't a person, it's an agent that runs 24/7",
+            "Finance teams will manage agent fleets the way they manage headcount",
+            "The question isn't IF agents are coming — it's who builds them first"
+          ],
+          "notes": "Ore's argument: we're entering the age of agent platforms. It's not about one AI tool — it's about platforms that let you build, deploy, and manage agents across your entire operation. Finance teams that build agents now will have a massive advantage.",
+          "status": "final"
+        }
+      ]
+    },
+    {
+      "id": "outtro",
+      "name": "Outtro",
+      "status": "final",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Thank you!!!",
           "bullets": [],
           "notes": "",
           "status": "final"
@@ -142,34 +143,26 @@
       ]
     },
     {
-      "id": "one-thing-ai",
-      "name": "One Thing I Did with AI",
-      "status": "proposed",
-      "slides": []
-    },
-    {
-      "id": "app-checkin",
-      "name": "App of the Show Check",
-      "status": "proposed",
-      "slides": []
-    },
-    {
-      "id": "outtro",
-      "name": "Outtro",
-      "status": "proposed",
-      "slides": []
-    },
-    {
-      "id": "ai-and-crypto",
-      "name": "AI and Crypto Special",
-      "status": "proposed",
-      "slides": []
-    },
-    {
       "id": "coming-soon",
       "name": "Coming Soon",
-      "status": "proposed",
-      "slides": []
+      "status": "final",
+      "slides": [
+        {
+          "type": "text",
+          "title": "Coming Soon",
+          "bullets": [
+            "Claude Skills",
+            "Claude Cowork",
+            "AI and Crypto",
+            "Our First Guest!!",
+            "Cool Things",
+            "Apps Apps Apps",
+            "TheFinanceSetup"
+          ],
+          "notes": "",
+          "status": "final"
+        }
+      ]
     }
   ]
 }
